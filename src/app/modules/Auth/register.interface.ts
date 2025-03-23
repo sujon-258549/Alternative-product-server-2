@@ -3,3 +3,8 @@ export interface TRegister {
   password: string;
   role: 'admin' | 'restaurant' | 'user';
 }
+
+export interface TLogin {
+  email: string;
+  password: string;
+}
