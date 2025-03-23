@@ -10,14 +10,14 @@ const createUserIntoDB = async (payload: TRegister) => {
 const loginUserIntoDB = async (payload: TLogin) => {
   const existUser = await User.findOne({ email: payload.email });
   if (!existUser) {
-    throw new AppError(httpStatus.UNAUTHORIZED, 'User is Unauthorize');
+    throw new AppError(httpStatus.UNAUTHORIZED, 'User not found.');
   }
   const comparePassword = await bcrypt.compare(
     payload.password,
     existUser.password,
   );
   if (!comparePassword) {
-    throw new AppError(httpStatus.UNAUTHORIZED, 'User is Unauthorize');
+    throw new AppError(httpStatus.UNAUTHORIZED, 'Incorrect password.');
   }
   console.log(comparePassword);
 };
