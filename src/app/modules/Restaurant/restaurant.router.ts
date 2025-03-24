@@ -10,5 +10,6 @@ router.post(
   auth(UserRole.restaurant),
   restaurantController.createMenuForDay,
 );
+router.get('/menu', auth(UserRole.restaurant), restaurantController.findMyMenu);
 
 export const restaurantRouter = router;

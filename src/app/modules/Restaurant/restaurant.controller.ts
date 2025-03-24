@@ -16,5 +16,14 @@ const createMenuForDay = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const findMyMenu = catchAsync(async (req: Request, res: Response) => {
+  const result = await restaurantServices.findMyMenuForDayIntoDB(req?.user);
+  sendSuccess(res, {
+    statuscode: httpStatus.OK,
+    success: true,
+    message: 'My Menu retrieved successfully',
+    data: result,
+  });
+});
 
-export const restaurantController = { createMenuForDay };
+export const restaurantController = { createMenuForDay, findMyMenu };

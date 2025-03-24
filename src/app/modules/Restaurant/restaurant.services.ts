@@ -9,5 +9,12 @@ const createMenuForDayIntoDB = async (payload: TMenu, user: JwtPayload) => {
   const result = await Restaurant.create(payload);
   return result;
 };
+const findMyMenuForDayIntoDB = async (user: JwtPayload) => {
+  const result = await Restaurant.find({ id: user.author_id });
+  return result;
+};
 
-export const restaurantServices = { createMenuForDayIntoDB };
+export const restaurantServices = {
+  createMenuForDayIntoDB,
+  findMyMenuForDayIntoDB,
+};
