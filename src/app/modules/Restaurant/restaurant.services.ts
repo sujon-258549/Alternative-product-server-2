@@ -14,9 +14,8 @@ const createMenuForDayIntoDB = async (payload: TMenu, user: JwtPayload) => {
   if (existDay) {
     throw new AppError(500, 'Day already exists!');
   }
-  console.log(existDay);
   const result = await Restaurant.create(payload);
-  console.log(result);
+  return result;
 };
 const findMyMenuForDayIntoDB = async (user: JwtPayload) => {
   const result = await Restaurant.find({ id: user.author_id });
