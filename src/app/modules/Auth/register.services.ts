@@ -1,4 +1,4 @@
-import AppError from '../../error/appError';
+import AppError from '../../middleware/error/appError';
 import { TLogin, TRegister } from './register.interface';
 import { User } from './register.model';
 import httpStatus from 'http-status';

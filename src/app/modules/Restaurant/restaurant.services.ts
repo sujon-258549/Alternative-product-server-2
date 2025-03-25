@@ -2,7 +2,7 @@ import { JwtPayload } from 'jsonwebtoken';
 // import { TJwtPayload } from '../types';
 import { TMenu } from './restaurant.interface';
 import { Restaurant } from './restaurant.model';
-import AppError from '../../error/appError';
+import AppError from '../../middleware/error/appError';
 
 const createMenuForDayIntoDB = async (payload: TMenu, user: JwtPayload) => {
   const authorId = user?.id;
