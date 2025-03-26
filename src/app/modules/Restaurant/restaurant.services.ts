@@ -3,6 +3,7 @@ import { JwtPayload } from 'jsonwebtoken';
 import { TMenu } from './restaurant.interface';
 import { Restaurant } from './restaurant.model';
 import AppError from '../../middleware/error/appError';
+import queryBuilder from '../../builder/queryBuilder';
 
 const createMenuForDayIntoDB = async (payload: TMenu, user: JwtPayload) => {
   const authorId = user?.id;
@@ -17,9 +18,15 @@ const createMenuForDayIntoDB = async (payload: TMenu, user: JwtPayload) => {
   const result = await Restaurant.create(payload);
   return result;
 };
-const findMyMenuForDayIntoDB = async (user: JwtPayload) => {
-  const result = await Restaurant.find({ id: user.author_id });
-  return result;
+const findMyMenuForDayIntoDB = async (
+  user: JwtPayload,
+  query: Record<string, unknown>,
+) => {
+  //   const result = await Restaurant.find({ id: user.author_id });
+  const restorenet = new queryBuilder(Restaurant.find(), query);
+  const meta = await restorenet.countTotal();
+  const data = await restorenet.modelQuery;
+  return { meta, data };
 };
 
 export const restaurantServices = {

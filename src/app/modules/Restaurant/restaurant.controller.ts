@@ -17,12 +17,16 @@ const createMenuForDay = catchAsync(async (req: Request, res: Response) => {
   });
 });
 const findMyMenu = catchAsync(async (req: Request, res: Response) => {
-  const result = await restaurantServices.findMyMenuForDayIntoDB(req?.user);
+  const result = await restaurantServices.findMyMenuForDayIntoDB(
+    req?.user,
+    req?.query,
+  );
   sendSuccess(res, {
     statuscode: httpStatus.OK,
     success: true,
     message: 'My Menu retrieved successfully',
-    data: result,
+    meta: result.meta,
+    data: result.data,
   });
 });
 
