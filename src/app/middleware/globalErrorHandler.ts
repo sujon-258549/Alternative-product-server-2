@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 import { handelGenericError } from './helper/handelGenericError';
 import { handelDuplicateError } from './helper/handelDuplicateError';
 import { handelCastError } from './helper/handelCastError';
+import { handelValidationError } from './helper/handelValidationError';
 // type error .................................................................
 // generic error
 // Duplicate error
@@ -32,9 +33,7 @@ export const globalErrorHandler = (
     //duplicate error
     handelDuplicateError(err, res);
   } else if (err instanceof mongoose.Error.ValidationError) {
-    res
-      .status(httpStatus.INTERNAL_SERVER_ERROR)
-      .json({ success: false, message: err.message, error: err });
+    handelValidationError(err, res);
   } else if (err instanceof Error) {
     //generic Error
     handelGenericError(err, res);
