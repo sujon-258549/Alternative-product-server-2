@@ -8,6 +8,7 @@ import { handelGenericError } from './helper/handelGenericError';
 import { handelDuplicateError } from './helper/handelDuplicateError';
 import { handelCastError } from './helper/handelCastError';
 import { handelValidationError } from './helper/handelValidationError';
+import { handelZodError } from './helper/handelZodError';
 // type error .................................................................
 // generic error
 // Duplicate error
@@ -34,6 +35,8 @@ export const globalErrorHandler = (
     handelDuplicateError(err, res);
   } else if (err instanceof mongoose.Error.ValidationError) {
     handelValidationError(err, res);
+  } else if (err.name && err.name === 'ZodError') {
+    handelZodError(err, res);
   } else if (err instanceof Error) {
     //generic Error
     handelGenericError(err, res);
