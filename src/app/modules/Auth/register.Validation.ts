@@ -8,4 +8,16 @@ const refreshTokenSchema = z.object({
   }),
 });
 
-export const userValidation = { refreshTokenSchema };
+const registerSchema = z.object({
+  body: z.object({
+    email: z.string().email({ message: 'Invalid email format' }),
+    password: z
+      .string()
+      .min(6, { message: 'Password must be at least 6 characters long' }),
+    role: z.enum(['admin', 'restaurant', 'user'], {
+      message: "Role must be 'admin', 'restaurant', or 'user'",
+    }),
+  }),
+});
+
+export const userValidation = { refreshTokenSchema, registerSchema };

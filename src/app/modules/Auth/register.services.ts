@@ -11,6 +11,7 @@ const createUserIntoDB = async (payload: TRegister) => {
   return result;
 };
 const loginUserIntoDB = async (payload: TLogin) => {
+  console.log(payload);
   const existUser = await User.findOne({ email: payload.email });
   if (!existUser) {
     throw new AppError(httpStatus.UNAUTHORIZED, 'User not found.');

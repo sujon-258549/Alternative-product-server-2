@@ -28,7 +28,7 @@ const UserSchema = new Schema<TRegister>(
 // Hash password before saving
 UserSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
-  this.password = await bcrypt.hash(this.password, 10);
+  this.password = await bcrypt.hash(this.password, 5);
   next();
 });
 

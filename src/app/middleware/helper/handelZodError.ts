@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Response } from 'express';
 
 export const handelZodError = (err: any, res: Response) => {
@@ -6,11 +7,11 @@ export const handelZodError = (err: any, res: Response) => {
       path: item.path.join(' '),
       message: item,
     };
-    res.status(400).json({
-      success: false,
-      message: err.message,
-      issues: issues,
-      err: err,
-    });
+  });
+  res.status(400).json({
+    success: false,
+    message: err.message,
+    issues: issues,
+    err: err,
   });
 };
