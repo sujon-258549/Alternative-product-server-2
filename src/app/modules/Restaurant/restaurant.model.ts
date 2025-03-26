@@ -9,7 +9,7 @@ const MenuItemSchema = new Schema<TMenuItem>({
 const MenuSchema = new Schema<TMenu>(
   {
     day: { type: String, required: true },
-    author_id: { type: String, required: true },
+    author_id: { type: String, required: true, ref: 'User' },
     morning: { type: MenuItemSchema, required: true },
     evening: { type: MenuItemSchema, required: true },
     night: { type: MenuItemSchema, required: true },
