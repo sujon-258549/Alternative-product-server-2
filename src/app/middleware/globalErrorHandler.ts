@@ -29,12 +29,14 @@ export const globalErrorHandler = (
   if (err instanceof mongoose.Error.CastError) {
     handelCastError(err, res);
   } else if (err.code && err.code === 11000) {
+    //duplicate error
     handelDuplicateError(err, res);
   } else if (err instanceof mongoose.Error.ValidationError) {
     res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
       .json({ success: false, message: err.message, error: err });
   } else if (err instanceof Error) {
+    //generic Error
     handelGenericError(err, res);
   }
 };
