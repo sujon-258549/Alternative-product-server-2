@@ -20,7 +20,7 @@ const findMyMenu = catchAsync(async (req: Request, res: Response) => {
   const result = await restaurantServices.findMyMenuForDayIntoDB(
     req?.user,
     req?.query,
-  );
+  ); //
   sendSuccess(res, {
     statuscode: httpStatus.OK,
     success: true,
