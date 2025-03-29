@@ -10,6 +10,7 @@ async function main() {
     await mongoose.connect(config.DATABASE_URL as string);
 
     // Assign the server instance
+    // Assign the server instance
     server = app.listen(config.port, () => {
       console.log(`🔥🔥App listening on port ${config.port}🔥🔥`);
     });
