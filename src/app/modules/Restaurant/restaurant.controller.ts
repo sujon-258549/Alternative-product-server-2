@@ -7,6 +7,7 @@ const createMenuForDay = catchAsync(async (req: Request, res: Response) => {
   const data = req.body;
   const result = await restaurantServices.createMenuForDayIntoDB(
     data,
+    // @ts-expect-error user
     req?.user,
   );
   sendSuccess(res, {
@@ -18,6 +19,7 @@ const createMenuForDay = catchAsync(async (req: Request, res: Response) => {
 });
 const findMyMenu = catchAsync(async (req: Request, res: Response) => {
   const result = await restaurantServices.findMyMenuForDayIntoDB(
+    // @ts-expect-error user
     req?.user,
     req?.query,
   ); //
