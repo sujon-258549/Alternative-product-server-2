@@ -14,9 +14,6 @@ const registerSchema = z.object({
     password: z
       .string()
       .min(6, { message: 'Password must be at least 6 characters long' }),
-    role: z.enum(['admin', 'restaurant', 'user'], {
-      message: "Role must be 'admin', 'restaurant', or 'user'",
-    }),
   }),
 });
 

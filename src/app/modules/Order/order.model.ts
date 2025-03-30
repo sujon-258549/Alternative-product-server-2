@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import { TDayMenu, TOrderMenu } from './order.interface';
 
 // Define Menu Item Schema
 const MenuItemSchema = new Schema({
@@ -7,17 +8,18 @@ const MenuItemSchema = new Schema({
 });
 
 // Define Daily Menu Schema
-const DayMenuSchema = new Schema({
+const DayMenuSchema = new Schema<TDayMenu>({
   day: { type: String, required: true },
-  morning: { type: MenuItemSchema, required: true },
-  evening: { type: MenuItemSchema, required: true },
-  night: { type: MenuItemSchema, required: true },
+  morning: { type: MenuItemSchema },
+  evening: { type: MenuItemSchema },
+  night: { type: MenuItemSchema },
 });
 
 // Define Main Menu Schema
-const MenuSchema = new Schema(
+const MenuSchema = new Schema<TOrderMenu>(
   {
     author_id: { type: String, required: true },
+    total_price: { type: Number },
     orderId: { type: String, required: true },
     days: { type: [DayMenuSchema], required: true }, // Array of daily menus
   },
@@ -25,6 +27,4 @@ const MenuSchema = new Schema(
 );
 
 // Define Mongoose Model
-const MenuModel = mongoose.model('order', MenuSchema);
-
-export default MenuModel;
+export const Order = mongoose.model<TOrderMenu>('order', MenuSchema);

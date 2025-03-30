@@ -5,7 +5,7 @@ import { orderController } from './order.controller';
 
 const router = Router();
 
-router.post('/order', auth(UserRole.user), orderController.createOrder);
+router.post('/create-order', auth(UserRole.user), orderController.createOrder);
 // router.get('/menu', auth(UserRole.restaurant), restaurantController.findMyMenu);
 
-export const restaurantRouter = router;
+export const orderRouter = router;
