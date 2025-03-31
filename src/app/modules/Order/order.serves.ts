@@ -15,7 +15,7 @@ const createOrderIntoDB = async (payload: TOrderMenu, user: JwtPayload) => {
   if (!existAuthorId) {
     throw new AppError(httpStatus.UNAUTHORIZED, 'Author Id not Authorize');
   }
-  // Calculate the total price
+  // Calculate the total price into days
   const totalPrice = payload.days.reduce((acc, day) => {
     return (
       acc +
