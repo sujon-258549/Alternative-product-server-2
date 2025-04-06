@@ -6,7 +6,7 @@ import zodValidation from '../utility/zodValidation';
 const router = Router();
 router.post(
   '/register',
-  zodValidation(userValidation.registerSchema),
+  //   zodValidation(userValidation.registerSchema),
   UserController.CreateUser,
 );
 router.post('/login', UserController.loginUser);
