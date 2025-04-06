@@ -6,4 +6,4 @@ const CreateMealProviderIntoDB = async (payload: TMaleProvider) => {
   return result;
 };
 
-export const mealProvider = { CreateMealProviderIntoDB };
+export const mealProviderServes = { CreateMealProviderIntoDB };
