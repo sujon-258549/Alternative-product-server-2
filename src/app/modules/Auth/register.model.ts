@@ -21,6 +21,20 @@ const UserSchema = new Schema<TRegister>(
       default: 'user',
       required: true,
     },
+    phone: {
+      type: Number,
+      required: true,
+      unique: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
+    secondaryPhone: {
+      type: Number,
+      required: true,
+      unique: true,
+    },
   },
   { timestamps: true },
 );
