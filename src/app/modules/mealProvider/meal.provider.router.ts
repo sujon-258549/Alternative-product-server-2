@@ -12,4 +12,4 @@ router.post(
 );
 // router.get('/menu', auth(UserRole.restaurant), restaurantController.findMyMenu);
 
-export const maleProviderRouter = router;
+export const mealProviderRouter = router;

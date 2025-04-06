@@ -1,6 +1,7 @@
 export interface TMaleProvider {
   shopName: string;
   shopAddress: string;
+  shopId: string;
   shipLogo: string;
   phoneNumber: string; // Contact number
   email: string; // Email address
