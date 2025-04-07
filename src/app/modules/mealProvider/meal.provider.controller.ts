@@ -5,16 +5,17 @@ import sendSuccess from '../utility/send-success';
 import { Request, Response } from 'express';
 const createMealProvider = catchAsync(async (req: Request, res: Response) => {
   const data = req.body;
-  const result = await mealProviderServes.CreateMealProviderIntoDB(
-    data,
-    // @ts-expect-error user
-    req?.user,
-  );
+  console.log(data, req.file);
+  //   const result = await mealProviderServes.CreateMealProviderIntoDB(
+  //     data,
+  //     // @ts-expect-error user
+  //     req?.user,
+  //   );
   sendSuccess(res, {
     statuscode: httpStatus.CREATED,
     success: true,
-    message: 'Order create successfully',
-    data: result,
+    message: 'Meal Provider created successfully',
+    data: null,
   });
 });
 

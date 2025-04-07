@@ -3,11 +3,11 @@ import { TMaleProvider } from './meal.provider.interfaces';
 
 const providerSchema = new Schema<TMaleProvider>({
   shopName: { type: String, required: true },
-  shopId: { type: String, required: true },
+  authorShopId: { type: String, required: true },
   shopAddress: { type: String, required: true },
-  shipLogo: { type: String, required: true },
+  shopLogo: { type: String, required: true },
   phoneNumber: { type: String, required: true },
-  email: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
   website: { type: String },
   ownerName: { type: String, required: true },
   establishedYear: { type: Number, required: true },
@@ -18,8 +18,8 @@ const providerSchema = new Schema<TMaleProvider>({
     twitter: { type: String },
     linkedin: { type: String },
   },
-  rating: { type: Number, required: true },
-  isActive: { type: Boolean, required: true },
+  rating: { type: Number },
+  isActive: { type: Boolean },
   operatingHours: {
     open: { type: String, required: true },
     close: { type: String, required: true },
@@ -29,16 +29,7 @@ const providerSchema = new Schema<TMaleProvider>({
   shippingMethods: { type: [String], required: true },
   returnPolicy: { type: String },
   customerServiceContact: { type: String },
-  reviews: [
-    {
-      user: { type: String },
-      rating: { type: Number },
-      reviewText: { type: String },
-      date: { type: String },
-    },
-  ],
   isVerified: { type: Boolean, required: true },
-  discountOffers: { type: [String] },
   countryOfOrigin: { type: String },
 });
 

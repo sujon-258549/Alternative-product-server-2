@@ -22,3 +22,14 @@ https://dev.to/shafayat/-express-typescript-eslint-prettiersetup-5fhg
 <!-- setup ts node dev -->
 
 npm i ts-node-dev
+
+<!-- image upload Cloudinary -->
+
+<!-- install multer -->
+
+npm i multer
+npm i @types/multer
+
+<!-- npm i cloudinary -->
+
+npm i cloudinary
