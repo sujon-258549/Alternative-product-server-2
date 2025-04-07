@@ -14,6 +14,7 @@ const createUserIntoDB = async (payload: TRegister, file: any) => {
     payload.phone.toString(),
     file?.path,
   );
+  // @ts-expect-error url
   payload.profileImage = profileImage?.secure_url;
   const result = await User.create(payload);
   return result;
