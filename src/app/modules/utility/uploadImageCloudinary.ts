@@ -1,6 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
 import multer from 'multer';
-export const sendImageCloudinary = () => {
+export const sendImageCloudinary = (name: string, path: string) => {
   (async function () {
     // Configuration
     cloudinary.config({
@@ -11,12 +11,9 @@ export const sendImageCloudinary = () => {
 
     // Upload an image
     const uploadResult = await cloudinary.uploader
-      .upload(
-        'https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg',
-        {
-          public_id: 'shoes',
-        },
-      )
+      .upload(path, {
+        public_id: name,
+      })
       .catch((error) => {
         console.log(error);
       });
@@ -24,7 +21,7 @@ export const sendImageCloudinary = () => {
     console.log(uploadResult);
 
     // Optimize delivery by resizing and applying auto-format and auto-quality
-    const optimizeUrl = cloudinary.url('shoes', {
+    const optimizeUrl = cloudinary.url(name, {
       fetch_format: 'auto',
       quality: 'auto',
     });
@@ -32,7 +29,7 @@ export const sendImageCloudinary = () => {
     console.log(optimizeUrl);
 
     // Transform the image: auto-crop to square aspect_ratio
-    const autoCropUrl = cloudinary.url('shoes', {
+    const autoCropUrl = cloudinary.url(name, {
       crop: 'auto',
       gravity: 'auto',
       width: 500,
