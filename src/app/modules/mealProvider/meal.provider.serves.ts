@@ -12,7 +12,9 @@ const CreateMealProviderIntoDB = async (
   const path = file?.path;
   const name = payload.shopName;
   const shopLogo = await sendImageCloudinary(name, path);
-  console.log(shopLogo);
+  // @ts-expect-error secure_url
+  payload.shopLogo = shopLogo?.secure_url;
+  console.log({ shopLogo });
   const result = await MaleProvider.create(payload);
   return result;
 };

@@ -1,43 +1,42 @@
 import { v2 as cloudinary } from 'cloudinary';
 import multer from 'multer';
 export const sendImageCloudinary = (name: string, path: string) => {
-  (async function () {
-    // Configuration
-    cloudinary.config({
-      cloud_name: 'dkdibsanz',
-      api_key: '558721645753651',
-      api_secret: 'Ky5Ga3DuiaRU77goqQem_bEdWQU', // Click 'View API Keys' above to copy your API secret
-    });
+  return new Promise((resolve, reject) => {
+    (async function () {
+      try {
+        // Configuration
+        cloudinary.config({
+          cloud_name: 'dkdibsanz',
+          api_key: '558721645753651',
+          api_secret: 'Ky5Ga3DuiaRU77goqQem_bEdWQU',
+        });
 
-    // Upload an image
-    const uploadResult = await cloudinary.uploader
-      .upload(path, {
-        public_id: name,
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+        // Upload an image
+        const uploadResult = await cloudinary.uploader.upload(path, {
+          public_id: name,
+        });
 
-    console.log(uploadResult);
+        // Optional: log optimized URLs
+        const optimizeUrl = cloudinary.url(name, {
+          fetch_format: 'auto',
+          quality: 'auto',
+        });
+        console.log('Optimized URL:', optimizeUrl);
 
-    // Optimize delivery by resizing and applying auto-format and auto-quality
-    const optimizeUrl = cloudinary.url(name, {
-      fetch_format: 'auto',
-      quality: 'auto',
-    });
+        const autoCropUrl = cloudinary.url(name, {
+          crop: 'auto',
+          gravity: 'auto',
+          width: 500,
+          height: 500,
+        });
+        console.log('Auto Crop URL:', autoCropUrl);
 
-    console.log(optimizeUrl);
-
-    // Transform the image: auto-crop to square aspect_ratio
-    const autoCropUrl = cloudinary.url(name, {
-      crop: 'auto',
-      gravity: 'auto',
-      width: 500,
-      height: 500,
-    });
-
-    console.log(autoCropUrl);
-  })();
+        resolve(uploadResult);
+      } catch (error) {
+        reject(error);
+      }
+    })();
+  });
 };
 
 const storage = multer.diskStorage({
