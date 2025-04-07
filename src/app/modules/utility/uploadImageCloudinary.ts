@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
 import multer from 'multer';
+import fs from 'fs';
 export const sendImageCloudinary = (name: string, path: string) => {
   return new Promise((resolve, reject) => {
     (async function () {
@@ -15,7 +16,13 @@ export const sendImageCloudinary = (name: string, path: string) => {
         const uploadResult = await cloudinary.uploader.upload(path, {
           public_id: name,
         });
-
+        fs.unlink(path, (err) => {
+          if (err) {
+            reject(err);
+          } else {
+            console.log('file is deleted');
+          }
+        });
         // Optional: log optimized URLs
         const optimizeUrl = cloudinary.url(name, {
           fetch_format: 'auto',

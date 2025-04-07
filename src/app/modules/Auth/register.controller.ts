@@ -7,7 +7,8 @@ import config from '../../config';
 
 const CreateUser = catchAsync(async (req: Request, res: Response) => {
   const data = req.body;
-  const result = await UserServices.createUserIntoDB(data);
+  console.log(data);
+  const result = await UserServices.createUserIntoDB(data, req?.file);
   sendSuccess(res, {
     statuscode: httpStatus.CREATED,
     success: true,

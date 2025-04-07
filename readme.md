@@ -33,3 +33,12 @@ npm i @types/multer
 <!-- npm i cloudinary -->
 
 npm i cloudinary
+
+uploads file create root folder
+
+<!-- delete file -->
+
+fs.unlink(file, (err) => {
+if (err) throw err;
+result = `Deleted ${file}`
+})
