@@ -81,8 +81,27 @@ const createRefreshTokenIntoDB = async (token: string) => {
   );
   return { accessToken };
 };
-const forgetPassword = async (phone: number) => {
-  console.log(phone);
+const forgetPassword = async (email: number) => {
+  console.log(email);
+  const existEmail = await User.findOne({ email: email });
+  if (!existEmail) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'User not found.');
+  }
+
+  const JwtPayload = {
+    email: existEmail.email,
+    role: existEmail.role,
+    id: existEmail._id,
+  };
+  const accessToken = createToken(
+    // @ts-expect-error token
+    JwtPayload,
+    config.ACCESS_SECRET as string,
+    '10m',
+  );
+
+  const resetUrlLink = `http://localhost:3000?email=${existEmail?.email}&token=${accessToken}`;
+  console.log(resetUrlLink);
 };
 export const UserServices = {
   createUserIntoDB,

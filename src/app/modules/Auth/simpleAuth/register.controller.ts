@@ -54,8 +54,8 @@ const refreshTokenUseCreateSecretToken = catchAsync(
   },
 );
 const forgetPassword = catchAsync(async (req: Request, res: Response) => {
-  const data = req.body;
-  const result = await UserServices.forgetPassword(data);
+  const { email } = req.body;
+  const result = await UserServices.forgetPassword(email);
   sendSuccess(res, {
     statuscode: httpStatus.CREATED,
     success: true,

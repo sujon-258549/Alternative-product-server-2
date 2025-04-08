@@ -42,3 +42,7 @@ fs.unlink(file, (err) => {
 if (err) throw err;
 result = `Deleted ${file}`
 })
+
+<!-- node mailer install and work -->
+
+npm install nodemailer
