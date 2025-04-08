@@ -75,8 +75,9 @@ const resetPassword = catchAsync(async (req: Request, res: Response) => {
   });
 });
 const changePassword = catchAsync(async (req: Request, res: Response) => {
-  const token = req?.user;
   const body = req.body;
+  // @ts-expect-error user
+  const token = req?.user;
   const result = await UserServices.changePassword(body, token);
   sendSuccess(res, {
     statuscode: httpStatus.CREATED,

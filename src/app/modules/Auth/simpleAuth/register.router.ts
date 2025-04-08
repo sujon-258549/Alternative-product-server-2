@@ -3,6 +3,8 @@ import { UserController } from './register.controller';
 import { userValidation } from './register.Validation';
 import zodValidation from '../../utility/zodValidation';
 import { upload } from '../../utility/uploadImageCloudinary';
+import auth from '../../utility/auth';
+import { UserRole } from './register.const';
 
 const router = Router();
 router.post(
@@ -23,6 +25,14 @@ router.post(
   UserController.refreshTokenUseCreateSecretToken,
 );
 router.post('/forget-password', UserController.forgetPassword);
-router.post('/reset-password', UserController.resetPassword);
-router.post('/change-password', UserController.changePassword);
+router.post(
+  '/reset-password',
+
+  UserController.resetPassword,
+);
+router.post(
+  '/change-password',
+  auth(UserRole.admin, UserRole.user, UserRole.restaurant),
+  UserController.changePassword,
+);
 export const userRouter = router;

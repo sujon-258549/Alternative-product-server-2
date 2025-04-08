@@ -139,7 +139,25 @@ const changePassword = async (
   payload: { oldPassword: string; newPassword: string },
   token: JwtPayload,
 ) => {
-  console.log(payload, token);
+  const existEmail = await User.findOne({ email: token?.email });
+  if (!existEmail) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'User not found.');
+  }
+  const comparePassword = await bcrypt.compare(
+    payload?.oldPassword,
+    existEmail?.password,
+  );
+  if (!comparePassword) {
+    throw new AppError(httpStatus.FORBIDDEN, 'Your password is not correct');
+  }
+  const hasPassword = await bcrypt.hash(payload.newPassword, 5);
+  const result = await User.findOneAndUpdate(
+    { email: existEmail.email }, // ✅ this is correct for filtering by email
+    { password: hasPassword }, // ✅ new password to set
+    { new: true }, // ✅ optional: returns the updated document
+  );
+
+  return result;
 };
 export const UserServices = {
   createUserIntoDB,
