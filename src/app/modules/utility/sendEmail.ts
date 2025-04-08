@@ -3,7 +3,7 @@ import config from '../../config';
 export const sendEmail = async () => {
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 465,
+    port: 587,
     secure: config.NODE_ENV === 'production', // true for port 465, false for other ports
     auth: {
       user: 'mdsujon258549@gmail.com',
