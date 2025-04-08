@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import auth from '../utility/auth';
-import { UserRole } from '../Auth/register.const';
+import { UserRole } from '../Auth/simpleAuth/register.const';
 import { orderController } from './order.controller';
 
 const router = Router();

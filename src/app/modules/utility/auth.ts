@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
-import { TUserRole } from '../Auth/register.interface';
+import { TUserRole } from '../Auth/simpleAuth/register.interface';
 import catchAsync from './catchAsync';
 import config from '../../config';
 import { JwtPayload } from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
 import AppError from '../../middleware/error/appError';
 import httpStatus from 'http-status';
-import { User } from '../Auth/register.model';
+import { User } from '../Auth/simpleAuth/register.model';
 const auth = (...requiredRole: TUserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies.accessToken;

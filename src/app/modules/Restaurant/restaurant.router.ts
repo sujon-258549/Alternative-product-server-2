@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { restaurantController } from './restaurant.controller';
 import auth from '../utility/auth';
-import { UserRole } from '../Auth/register.const';
+import { UserRole } from '../Auth/simpleAuth/register.const';
 
 const router = Router();
 

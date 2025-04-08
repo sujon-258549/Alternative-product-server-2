@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { UserController } from './register.controller';
 import { userValidation } from './register.Validation';
-import zodValidation from '../utility/zodValidation';
-import { upload } from '../utility/uploadImageCloudinary';
+import zodValidation from '../../utility/zodValidation';
+import { upload } from '../../utility/uploadImageCloudinary';
 
 const router = Router();
 router.post(
@@ -22,5 +22,5 @@ router.post(
   zodValidation(userValidation.refreshTokenSchema),
   UserController.refreshTokenUseCreateSecretToken,
 );
-
+router.post('/forget-password', UserController.forgetPassword);
 export const userRouter = router;

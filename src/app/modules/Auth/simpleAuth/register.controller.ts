@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import catchAsync from '../utility/catchAsync';
+import catchAsync from '../../utility/catchAsync';
 import { UserServices } from './register.services';
-import sendSuccess from '../utility/send-success';
+import sendSuccess from '../../utility/send-success';
 import httpStatus from 'http-status';
-import config from '../../config';
+import config from '../../../config';
 
 const CreateUser = catchAsync(async (req: Request, res: Response) => {
   const data = req.body;
@@ -53,9 +53,19 @@ const refreshTokenUseCreateSecretToken = catchAsync(
     });
   },
 );
-
+const forgetPassword = catchAsync(async (req: Request, res: Response) => {
+  const data = req.body;
+  const result = await UserServices.forgetPassword(data);
+  sendSuccess(res, {
+    statuscode: httpStatus.CREATED,
+    success: true,
+    message: 'Reset link is gangrened  successfully',
+    data: result,
+  });
+});
 export const UserController = {
   CreateUser,
   loginUser,
   refreshTokenUseCreateSecretToken,
+  forgetPassword,
 };

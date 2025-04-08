@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import AppError from '../../middleware/error/appError';
+import AppError from '../../../middleware/error/appError';
 import { TLogin, TRegister } from './register.interface';
 import { User } from './register.model';
 import httpStatus from 'http-status';
 import bcrypt from 'bcrypt';
 import { createToken } from './auth.utils';
-import config from '../../config';
+import config from '../../../config';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { sendImageCloudinary } from '../utility/uploadImageCloudinary';
+import { sendImageCloudinary } from '../../utility/uploadImageCloudinary';
 const createUserIntoDB = async (payload: TRegister, file: any) => {
   console.log({ file });
   const profileImage = await sendImageCloudinary(
@@ -81,8 +81,12 @@ const createRefreshTokenIntoDB = async (token: string) => {
   );
   return { accessToken };
 };
+const forgetPassword = async (phone: number) => {
+  console.log(phone);
+};
 export const UserServices = {
   createUserIntoDB,
   loginUserIntoDB,
   createRefreshTokenIntoDB,
+  forgetPassword,
 };
