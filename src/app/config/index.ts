@@ -11,4 +11,5 @@ export default {
   ACCESS_EXPIRE_IN: process.env.ACCESS_EXPIRE_IN,
   REFRESH_SECRET: process.env.REFRESH_SECRET,
   REFRESH_EXPIRE_IN: process.env.REFRESH_EXPIRE_IN,
+  RESET_UI_LINK: process.env.RESET_UI_LINK,
 };

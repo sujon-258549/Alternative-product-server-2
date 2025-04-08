@@ -63,9 +63,33 @@ const forgetPassword = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const resetPassword = catchAsync(async (req: Request, res: Response) => {
+  const body = req.headers.authorization;
+  const data = req.body;
+  const result = await UserServices.resetPassword(body, data);
+  sendSuccess(res, {
+    statuscode: httpStatus.CREATED,
+    success: true,
+    message: 'Password reset  successfully',
+    data: result,
+  });
+});
+const changePassword = catchAsync(async (req: Request, res: Response) => {
+  const token = req?.user;
+  const body = req.body;
+  const result = await UserServices.changePassword(body, token);
+  sendSuccess(res, {
+    statuscode: httpStatus.CREATED,
+    success: true,
+    message: 'Password change  successfully',
+    data: result,
+  });
+});
 export const UserController = {
   CreateUser,
   loginUser,
   refreshTokenUseCreateSecretToken,
   forgetPassword,
+  resetPassword,
+  changePassword,
 };

@@ -8,6 +8,7 @@ import { createToken } from './auth.utils';
 import config from '../../../config';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { sendImageCloudinary } from '../../utility/uploadImageCloudinary';
+import { sendEmail } from '../../utility/sendEmail';
 const createUserIntoDB = async (payload: TRegister, file: any) => {
   console.log({ file });
   const profileImage = await sendImageCloudinary(
@@ -100,12 +101,51 @@ const forgetPassword = async (email: number) => {
     '10m',
   );
 
-  const resetUrlLink = `http://localhost:3000?email=${existEmail?.email}&token=${accessToken}`;
+  const resetUrlLink = `${config.RESET_UI_LINK}?email=${existEmail?.email}&token=${accessToken}`;
   console.log(resetUrlLink);
+  sendEmail(existEmail.email, resetUrlLink);
+};
+const resetPassword = async (
+  payload: any,
+  data: { newPassword: string; email: string },
+) => {
+  let decoded;
+  try {
+    decoded = jwt.verify(payload, config.ACCESS_SECRET as string) as JwtPayload;
+    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+  } catch (err) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'User is not authorized');
+  }
+  if (!decoded) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'User is not authorized');
+  }
+
+  const user = await User.findOne({ _id: decoded.id });
+  if (data.email != user?.email) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'User is not authorized');
+  }
+  console.log(user.email);
+  const hasPassword = await bcrypt.hash(data?.newPassword, 5);
+  const result = await User.findOneAndUpdate(
+    { email: user.email }, // ✅ this is correct for filtering by email
+    { password: hasPassword }, // ✅ new password to set
+    { new: true }, // ✅ optional: returns the updated document
+  );
+
+  return result;
+};
+
+const changePassword = async (
+  payload: { oldPassword: string; newPassword: string },
+  token: JwtPayload,
+) => {
+  console.log(payload, token);
 };
 export const UserServices = {
   createUserIntoDB,
   loginUserIntoDB,
   createRefreshTokenIntoDB,
   forgetPassword,
+  resetPassword,
+  changePassword,
 };

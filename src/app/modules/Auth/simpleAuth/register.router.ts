@@ -23,4 +23,6 @@ router.post(
   UserController.refreshTokenUseCreateSecretToken,
 );
 router.post('/forget-password', UserController.forgetPassword);
+router.post('/reset-password', UserController.resetPassword);
+router.post('/change-password', UserController.changePassword);
 export const userRouter = router;

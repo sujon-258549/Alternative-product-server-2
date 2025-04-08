@@ -34,7 +34,6 @@ const auth = (...requiredRole: TUserRole[]) => {
         'User does not have the required permissions',
       );
     }
-    // @ts-expect-error user
     req.user = decoded;
     next();
   });
