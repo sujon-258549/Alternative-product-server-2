@@ -1,5 +1,6 @@
 export interface TMaleProvider {
   shopName: string;
+  userid: string;
   shopAddress: string;
   authorShopId: string;
   shopLogo?: string;

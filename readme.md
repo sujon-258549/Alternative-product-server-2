@@ -46,3 +46,7 @@ result = `Deleted ${file}`
 <!-- node mailer install and work -->
 
 npm install nodemailer
+
+<!-- sslcommerz -->
+
+npm i sslcommerz-lts

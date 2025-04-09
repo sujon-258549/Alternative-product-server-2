@@ -4,6 +4,7 @@ import { restaurantRouter } from '../modules/Restaurant/restaurant.router';
 import { orderRouter } from '../modules/Order/order.router';
 import { mealProviderRouter } from '../modules/mealProvider/meal.provider.router';
 import { sosalLoginUserRouter } from '../modules/Auth/sosalAuth/sosolauth.router';
+import { SSLRoutes } from '../modules/sslCommeriz/sslCommeriz.router';
 
 const router = Router();
 
@@ -27,6 +28,10 @@ const allRouter = [
   {
     path: '/sosal',
     router: sosalLoginUserRouter,
+  },
+  {
+    path: '/ssl',
+    router: SSLRoutes,
   },
 ];
 allRouter.forEach((route) => router.use(route.path, route.router));

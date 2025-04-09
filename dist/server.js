@@ -14,27 +14,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const app_1 = __importDefault(require("./app"));
+const config_1 = __importDefault(require("./app/config"));
 let server; // Explicitly define the type
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            yield mongoose_1.default.connect(process.env.DATABASE_URL);
+            yield mongoose_1.default.connect(config_1.default.DATABASE_URL);
             // Assign the server instance
-            server = app_1.default.listen(process.env.PORT, () => {
-                console.log(`⛳🔥Example app listening on port ${process.env.PORT}`);
+            // Assign the server instance
+            server = app_1.default.listen(config_1.default.port, () => {
+                console.log(`🔥🔥App listening on port ${config_1.default.port}🔥🔥`);
             });
         }
         catch (error) {
-            console.log("Error starting the server:", error);
+            console.log('Error starting the server:', error);
         }
     });
 }
 // Call the main function to start the server
 main();
-process.on("unhandledRejection", () => {
+process.on('unhandledRejection', () => {
     if (server) {
         server.close(() => {
-            console.log("Server closed due to unhandled rejection.");
+            console.log('Server closed due to unhandled rejection.');
             process.exit(1);
         });
     }
