@@ -19,7 +19,12 @@ const DayMenuSchema = new Schema<TDayMenu>({
 const MenuSchema = new Schema<TOrderMenu>(
   {
     author_id: { type: String, required: true },
-    paymentStatus: { type: String, default: 'pending' },
+    transactionId: { type: String || Number },
+    paymentStatus: {
+      type: String,
+      enum: ['Pending', 'Processing', 'Completed', 'Cancelled'],
+      default: 'Pending',
+    },
     total_price: { type: Number },
     orderId: { type: String, required: true },
     days: { type: [DayMenuSchema], required: true }, // Array of daily menus

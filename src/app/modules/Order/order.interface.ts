@@ -12,7 +12,8 @@ export interface TDayMenu {
 
 export interface TOrderMenu {
   author_id: string;
-  paymentStatus: string;
+  paymentStatus: 'Pending' | 'Processing' | 'Completed' | 'Cancelled';
+  transactionId: string | number;
   total_price: number;
   orderId: string;
   days: TDayMenu[]; // Array of daily menus

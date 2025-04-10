@@ -1,6 +1,6 @@
-import express from 'express';
+// import express from 'express';
 
-const app = express();
+// const app = express();
 import SSLCommerzPayment from 'sslcommerz-lts';
 import config from '../../config';
 import AppError from '../../middleware/error/appError';
@@ -20,7 +20,8 @@ const insertPayment = async (paymentData: {
     total_amount: total_amount, // ✅ number
     currency: 'BDT', // ✅ string
     tran_id: String(tran_id), // ✅ ensure it's a string
-    success_url: config.SUCCESS_URL,
+    success_url: `${config.VALIDATION_URL}?tran_id=${tran_id}`,
+    // success_url: `${config.ssl.validation_url}?tran_id=${tran_id}`,
     fail_url: config.FAIL_URL,
     cancel_url: config.CANCEL_URL,
     ipn_url: 'http://localhost:3030/ipn',
@@ -78,6 +79,7 @@ const insertPayment = async (paymentData: {
 };
 
 const validatePaymentService = async (tran_id: string): Promise<boolean> => {
+  console.log('transition id', tran_id);
   const sslcz = new SSLCommerzPayment(
     storeId as string,
     storePassword as string,
@@ -93,7 +95,7 @@ const validatePaymentService = async (tran_id: string): Promise<boolean> => {
       tran_id,
     });
 
-    console.log(validationResponse.element);
+    // console.log(validationResponse.element);
 
     let data;
 
@@ -117,23 +119,13 @@ const validatePaymentService = async (tran_id: string): Promise<boolean> => {
       };
     }
 
-    // const updatedPayment = await Order.findOneAndUpdate(
-    //   { transactionId: validationResponse.element[0].tran_id },
-    //   data,
-    //   { new: true, session },
-    // );
-
-    // if (!updatedPayment) {
-    //   throw new Error('Payment not updated');
-    // }
-
-    const updatedOrder = await Order.findByIdAndUpdate(
-      updatedPayment?.order,
+    const updatedOrder = await Order.findOneAndUpdate(
+      { transactionId: tran_id },
       {
         paymentStatus: data.status,
       },
       { new: true, session },
-    ).populate('user products.product');
+    );
 
     if (!updatedOrder) {
       throw new Error('Order not updated');
@@ -146,29 +138,6 @@ const validatePaymentService = async (tran_id: string): Promise<boolean> => {
     // Commit transaction only if no errors occurred
     await session.commitTransaction();
     session.endSession();
-
-    console.log('email');
-
-    const pdfBuffer = await generateOrderInvoicePDF(updatedOrder);
-    const emailContent = await EmailHelper.createEmailContent(
-      //@ts-ignore
-      { userName: updatedOrder.user.name || '' },
-      'orderInvoice',
-    );
-
-    const attachment = {
-      filename: `Invoice_${updatedOrder._id}.pdf`,
-      content: pdfBuffer,
-      encoding: 'base64',
-    };
-
-    await EmailHelper.sendEmail(
-      //@ts-expect-error email
-      updatedOrder.user.email,
-      emailContent,
-      'Order confirmed-Payment Success!',
-      attachment,
-    );
 
     return true;
   } catch (error) {

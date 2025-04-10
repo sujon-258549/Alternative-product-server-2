@@ -7,7 +7,6 @@ import config from '../../config';
 const validatePayment = catchAsync(async (req: Request, res: Response) => {
   const tran_id = req.query.tran_id as string;
   const result = await sslServices.validatePaymentService(tran_id);
-  console.log(result);
 
   if (result) {
     res.redirect(301, config.SUCCESS_URL as string);

@@ -17,4 +17,5 @@ export default {
   SUCCESS_URL: process.env.SUCCESS_URL,
   FAIL_URL: process.env.FAIL_URL,
   CANCEL_URL: process.env.CANCEL_URL,
+  VALIDATION_URL: process.env.VALIDATION_URL,
 };

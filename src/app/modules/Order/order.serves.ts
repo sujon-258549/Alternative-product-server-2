@@ -27,11 +27,14 @@ const createOrderIntoDB = async (payload: TOrderMenu, user: JwtPayload) => {
     );
   }, 0);
   payload.total_price = totalPrice;
-  const res = await Order.create(payload);
+  //   transition id
   const digits = Array.from({ length: 20 }, () =>
     Math.floor(Math.random() * 10),
   ).join('');
   const bigIntNumber = BigInt(digits);
+  payload.transactionId = String(bigIntNumber);
+  const res = await Order.create(payload);
+
   let result;
   if (res) {
     result = await sslServices.insertPayment({
