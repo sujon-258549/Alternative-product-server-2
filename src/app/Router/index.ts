@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { userRouter } from '../modules/Auth/simpleAuth/register.router';
-import { restaurantRouter } from '../modules/Restaurant/restaurant.router';
+import { restaurantRouter } from '../modules/Menu/menu.router';
 import { orderRouter } from '../modules/Order/order.router';
 import { mealProviderRouter } from '../modules/mealProvider/meal.provider.router';
 import { sosalLoginUserRouter } from '../modules/Auth/sosalAuth/sosolauth.router';

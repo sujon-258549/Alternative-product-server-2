@@ -1,7 +1,7 @@
 import { JwtPayload } from 'jsonwebtoken';
 // import { TJwtPayload } from '../types';
-import { TMenu } from './restaurant.interface';
-import { Restaurant } from './restaurant.model';
+import { TMenu } from './menu.interface';
+import { Restaurant } from './menu.model';
 import AppError from '../../middleware/error/appError';
 import queryBuilder from '../../builder/queryBuilder';
 

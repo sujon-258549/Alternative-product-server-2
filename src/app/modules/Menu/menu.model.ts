@@ -1,7 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
-import { TMenu, TMenuItem } from './restaurant.interface';
 
-const MenuItemSchema = new Schema<TMenuItem>({
+const MenuItemSchema = new Schema<IMenuItem>({
   menu: { type: String, required: true },
   price: { type: Number, required: true },
 });

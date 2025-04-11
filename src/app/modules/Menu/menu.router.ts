@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { restaurantController } from './restaurant.controller';
+import { restaurantController } from './menu.controller';
 import auth from '../utility/auth';
 import { UserRole } from '../Auth/simpleAuth/register.const';
 
