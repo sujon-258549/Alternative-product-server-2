@@ -12,7 +12,7 @@ export interface TRegister {
   fullName: string;
   email: string;
   password: string;
-  role: 'admin' | 'restaurant' | 'user';
+  role: 'admin' | 'mealprovider' | 'user';
   address: TAddress;
   dateOfBirth: string; // corrected spelling from "dateOfBarth"
   gender: 'male' | 'female' | 'other';

@@ -7,9 +7,24 @@ const router = Router();
 
 router.post(
   '/menu',
-  auth(UserRole.restaurant),
+  auth(UserRole.mealprovider),
   restaurantController.createMenuForDay,
 );
-router.get('/menu', auth(UserRole.restaurant), restaurantController.findMyMenu);
+router.get('/menu', restaurantController.findAllMenu);
+router.get(
+  '/menu/:id',
+  auth(UserRole.user),
+  restaurantController.findSingleMenu,
+);
+router.get(
+  '/my-menu',
+  auth(UserRole.mealprovider),
+  restaurantController.findMyMenu,
+);
+router.put(
+  '/my-menu',
+  auth(UserRole.mealprovider),
+  restaurantController.updateMyMenu,
+);
 
 export const restaurantRouter = router;

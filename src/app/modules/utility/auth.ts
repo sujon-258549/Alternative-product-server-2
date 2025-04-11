@@ -27,7 +27,6 @@ const auth = (...requiredRole: TUserRole[]) => {
     if (!user) {
       throw new AppError(httpStatus.NOT_FOUND, 'Your User Id is Invalid!');
     }
-
     if (requiredRole && !requiredRole?.includes(decoded?.role)) {
       throw new AppError(
         httpStatus.UNAUTHORIZED,

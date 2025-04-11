@@ -1,11 +1,9 @@
 export interface TMaleProvider {
   shopName: string;
-  userid: string;
   shopAddress: string;
   authorShopId: string;
   shopLogo?: string;
   phoneNumber: string; // Contact number
-  email: string; // Email address
   website?: string; // Optional website URL
   ownerName: string; // Name of the shop owner
   establishedYear: number; // Year the shop was established
