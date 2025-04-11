@@ -2,7 +2,7 @@ export interface IMenuItem {
   menu: string;
   price: number;
 }
-export interface TDayMenu {
+export interface IDayMenu {
   day?: string; // Example: "Saturday"
   morning?: IMenuItem;
   evening?: IMenuItem;
@@ -10,6 +10,6 @@ export interface TDayMenu {
 }
 
 export interface TMenu {
-  day: TDayMenu[];
+  day: IDayMenu[];
   author_id: string;
 }
