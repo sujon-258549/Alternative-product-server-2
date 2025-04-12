@@ -9,7 +9,7 @@ export interface TAddress {
 }
 
 export interface TRegister {
-  fullName: string;
+  fullName: string; //full name
   email: string;
   password: string;
   role: 'admin' | 'mealprovider' | 'user';
