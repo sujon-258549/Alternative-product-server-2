@@ -7,16 +7,15 @@ import bcrypt from 'bcrypt';
 import { createToken } from './auth.utils';
 import config from '../../../config';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { sendImageCloudinary } from '../../utility/uploadImageCloudinary';
 import { sendEmail } from '../../utility/sendEmail';
+import { sendImageToCloudinary } from '../../utility/uploadImageCloudinary';
 const createUserIntoDB = async (payload: TRegister, file: any) => {
   console.log({ file });
-  const profileImage = await sendImageCloudinary(
+  const profileImage = await sendImageToCloudinary(
     payload.phone.toString(),
     file?.path,
   );
-  // @ts-expect-error url
-  payload.profileImage = profileImage?.secure_url;
+  payload.profileImage = profileImage.secure_url as string;
   const result = await User.create(payload);
   return result;
 };
@@ -37,7 +36,7 @@ const loginUserIntoDB = async (payload: TLogin) => {
   const JwtPayload = {
     email: existUser.email,
     role: existUser.role,
-    id: existUser._id,
+    Id: existUser._id,
   };
   const accessToken = createToken(
     // @ts-expect-error token
@@ -72,7 +71,7 @@ const createRefreshTokenIntoDB = async (token: string) => {
   const JwtPayload = {
     email: existUser.email,
     role: existUser.role,
-    id: existUser._id,
+    Id: existUser._id,
   };
   const accessToken = createToken(
     // @ts-expect-error token
@@ -82,8 +81,7 @@ const createRefreshTokenIntoDB = async (token: string) => {
   );
   return { accessToken };
 };
-const forgetPassword = async (email: number) => {
-  console.log(email);
+const forgetPassword = async (email: string) => {
   const existEmail = await User.findOne({ email: email });
   if (!existEmail) {
     throw new AppError(httpStatus.UNAUTHORIZED, 'User not found.');
@@ -92,7 +90,7 @@ const forgetPassword = async (email: number) => {
   const JwtPayload = {
     email: existEmail.email,
     role: existEmail.role,
-    id: existEmail._id,
+    Id: existEmail._id,
   };
   const accessToken = createToken(
     // @ts-expect-error token
@@ -159,6 +157,36 @@ const changePassword = async (
 
   return result;
 };
+
+const getMeFromDB = async (user: JwtPayload) => {
+  const result = await User.findById(user.Id).select('-password');
+  return result;
+};
+
+const setImageIntoUser = async (file: any, user: JwtPayload) => {
+  const { Id } = user;
+
+  const isExistUser = await User.findOne({ Id });
+
+  if (!isExistUser) {
+    return new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  if (file) {
+    const path = file?.path;
+    const name = isExistUser.fullName.replace(/\s+/g, '_').toLowerCase();
+
+    const { secure_url } = (await sendImageToCloudinary(name, path)) as {
+      secure_url: string;
+    };
+    if (!secure_url) {
+      return new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Image not found');
+    }
+    isExistUser.profileImage = secure_url;
+    return await isExistUser.save();
+  }
+  return isExistUser;
+};
+
 export const UserServices = {
   createUserIntoDB,
   loginUserIntoDB,
@@ -166,4 +194,6 @@ export const UserServices = {
   forgetPassword,
   resetPassword,
   changePassword,
+  setImageIntoUser,
+  getMeFromDB,
 };

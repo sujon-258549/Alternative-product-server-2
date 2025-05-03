@@ -32,7 +32,9 @@ router.post(
 );
 router.post(
   '/change-password',
-  auth(UserRole.admin, UserRole.user, UserRole.restaurant),
+  auth(UserRole.user),
   UserController.changePassword,
 );
+router.post('/get-me', auth(UserRole.user), UserController.getMe);
+router.post('/set-image', auth(UserRole.user), UserController.setImageIntoUser);
 export const userRouter = router;

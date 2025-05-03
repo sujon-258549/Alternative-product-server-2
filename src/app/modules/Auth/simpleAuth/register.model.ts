@@ -1,6 +1,6 @@
 import { model, Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
-import { TAddress, TRegister } from './register.interface';
+import { TAddress, TRegister, TSocialMediaLinks } from './register.interface';
 
 const addressSchema = new Schema<TAddress>(
   {
@@ -9,6 +9,15 @@ const addressSchema = new Schema<TAddress>(
     subDistrict: { type: String, required: true },
     post: { type: String, required: true },
     postCode: { type: String, required: true },
+  },
+  { _id: false },
+);
+const socialMediaLinksSchema = new Schema<TSocialMediaLinks>(
+  {
+    facebook: { type: String },
+    linkedin: { type: String },
+    twitter: { type: String },
+    instagram: { type: String },
   },
   { _id: false },
 );
@@ -57,6 +66,9 @@ const UserSchema = new Schema<TRegister>(
     address: {
       type: addressSchema,
       required: true,
+    },
+    socialMesaLink: {
+      type: socialMediaLinksSchema,
     },
     isShop: {
       type: Boolean,

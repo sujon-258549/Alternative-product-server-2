@@ -86,6 +86,29 @@ const changePassword = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const setImageIntoUser = catchAsync(async (req: Request, res: Response) => {
+  const file = req?.file;
+  // @ts-expect-error user
+  const token = req?.user;
+  const result = await UserServices.setImageIntoUser(file, token);
+  sendSuccess(res, {
+    statuscode: httpStatus.CREATED,
+    success: true,
+    message: 'Image change  successfully',
+    data: result,
+  });
+});
+const getMe = catchAsync(async (req: Request, res: Response) => {
+  // @ts-expect-error user
+  const token = req?.user;
+  const result = await UserServices.getMeFromDB(token);
+  sendSuccess(res, {
+    statuscode: httpStatus.CREATED,
+    success: true,
+    message: 'My date retrieved   successfully',
+    data: result,
+  });
+});
 export const UserController = {
   CreateUser,
   loginUser,
@@ -93,4 +116,6 @@ export const UserController = {
   forgetPassword,
   resetPassword,
   changePassword,
+  setImageIntoUser,
+  getMe,
 };

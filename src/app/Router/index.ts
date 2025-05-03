@@ -1,10 +1,7 @@
 import { Router } from 'express';
 import { userRouter } from '../modules/Auth/simpleAuth/register.router';
-import { restaurantRouter } from '../modules/Menu/menu.router';
-import { orderRouter } from '../modules/Order/order.router';
-import { mealProviderRouter } from '../modules/mealProvider/meal.provider.router';
-import { sosalLoginUserRouter } from '../modules/Auth/sosalAuth/sosolauth.router';
-import { SSLRoutes } from '../modules/sslCommeriz/sslCommeriz.router';
+import { product } from '../modules/product/product.router';
+import { recommendation } from '../modules/recommendation/recommendation.router';
 
 const router = Router();
 
@@ -14,24 +11,12 @@ const allRouter = [
     router: userRouter,
   },
   {
-    path: '/restaurant',
-    router: restaurantRouter,
+    path: '/product',
+    router: product,
   },
   {
-    path: '/order',
-    router: orderRouter,
-  },
-  {
-    path: '/meal-provider',
-    router: mealProviderRouter,
-  },
-  {
-    path: '/sosal',
-    router: sosalLoginUserRouter,
-  },
-  {
-    path: '/ssl',
-    router: SSLRoutes,
+    path: '/recommendation',
+    router: recommendation,
   },
 ];
 allRouter.forEach((route) => router.use(route.path, route.router));
