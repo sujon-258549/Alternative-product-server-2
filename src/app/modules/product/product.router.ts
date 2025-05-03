@@ -17,6 +17,7 @@ router.post(
   //   auth(UserRole.user),
   ProductController.createProduct,
 );
+// get all product
 router.get('/', ProductController.getAllProduct);
 router.get('/:id', ProductController.getAllProduct);
 router.get('/my-product', auth('user'), ProductController.findMyProduct);
