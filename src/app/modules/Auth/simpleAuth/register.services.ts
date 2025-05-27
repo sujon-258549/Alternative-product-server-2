@@ -9,14 +9,25 @@ import config from '../../../config';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { sendEmail } from '../../utility/sendEmail';
 import { sendImageToCloudinary } from '../../utility/uploadImageCloudinary';
-const createUserIntoDB = async (payload: TRegister, file: any) => {
-  console.log({ file });
-  const profileImage = await sendImageToCloudinary(
-    payload.phone.toString(),
-    file?.path,
-  );
-  payload.profileImage = profileImage.secure_url as string;
+// create user
+const createUserIntoDB = async (payload: TRegister) => {
   const result = await User.create(payload);
+  return result;
+};
+
+const updateUserIntoDB = async (
+  payload: Partial<TRegister>,
+  user: JwtPayload,
+) => {
+  const existUser = await User.findOne({ email: user.email });
+  if (!existUser) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'User not found.');
+  }
+  const result = await User.findOneAndUpdate(
+    { email: existUser.email },
+    payload,
+    { new: true },
+  );
   return result;
 };
 const loginUserIntoDB = async (payload: TLogin) => {
@@ -100,7 +111,6 @@ const forgetPassword = async (email: string) => {
   );
 
   const resetUrlLink = `${config.RESET_UI_LINK}?email=${existEmail?.email}&token=${accessToken}`;
-  console.log(resetUrlLink);
   sendEmail(existEmail.email, resetUrlLink);
 };
 const resetPassword = async (
@@ -108,8 +118,10 @@ const resetPassword = async (
   data: { newPassword: string; email: string },
 ) => {
   let decoded;
+  console.log(decoded);
   try {
     decoded = jwt.verify(payload, config.ACCESS_SECRET as string) as JwtPayload;
+
     // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
   } catch (err) {
     throw new AppError(httpStatus.UNAUTHORIZED, 'User is not authorized');
@@ -122,7 +134,7 @@ const resetPassword = async (
   if (data.email != user?.email) {
     throw new AppError(httpStatus.UNAUTHORIZED, 'User is not authorized');
   }
-  console.log(user.email);
+
   const hasPassword = await bcrypt.hash(data?.newPassword, 5);
   const result = await User.findOneAndUpdate(
     { email: user.email }, // ✅ this is correct for filtering by email
@@ -196,4 +208,5 @@ export const UserServices = {
   changePassword,
   setImageIntoUser,
   getMeFromDB,
+  updateUserIntoDB,
 };

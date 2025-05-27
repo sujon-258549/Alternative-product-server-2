@@ -1,6 +1,6 @@
 import { FilterQuery, Query } from 'mongoose';
 
-class queryBuilder<T> {
+class QueryBuilder<T> {
   public modelQuery: Query<T[], T>;
   public query: Record<string, unknown>;
 
@@ -8,11 +8,11 @@ class queryBuilder<T> {
     this.modelQuery = modelQuery;
     this.query = query;
   }
-  search(searchableFields: []) {
+  search(searchableField: string[]) {
     const searchTerm = this?.query?.searchTerm;
     if (searchTerm) {
       this.modelQuery = this.modelQuery.find({
-        $or: searchableFields.map(
+        $or: searchableField.map(
           (field) =>
             ({
               [field]: { $regex: searchTerm, $options: 'i' },
@@ -22,29 +22,49 @@ class queryBuilder<T> {
     }
     return this;
   }
+
   filter() {
-    const queryObj = { ...this.query };
-    const excludeFields = ['searchTram', 'sort', 'limit', 'page', 'fields'];
-    excludeFields.forEach((item) => delete queryObj[item]);
-    this.modelQuery = this.modelQuery.find(queryObj as FilterQuery<T>);
+    const queryObject = { ...this.query };
+    console.log(queryObject);
+    const excludeField = ['searchTerm', 'sort', 'limit', 'page', 'field'];
+    //   delete esrch tram
+    excludeField.forEach((el) => delete queryObject[el]);
+    this.modelQuery = this.modelQuery.find(queryObject as FilterQuery<T>);
     return this;
   }
+
   sort() {
-    const sort = this?.query?.sort || '-createdAt';
-    this.modelQuery = this.modelQuery?.sort(sort as string);
+    const sort =
+      (this.query.sort as string)?.split(',')?.join(' ') || '-createdAt'; // Potential issue  //
+    this.modelQuery = this.modelQuery.sort(sort as string);
     return this;
   }
+
   paginate() {
-    const page = Number(this.query.page) || 1;
-    const limit = Number(this.query.limit) || 10;
+    const page = Number(this?.query?.page) || 1;
+    const limit = Number(this?.query?.limit) || 50;
     const skip = (page - 1) * limit;
     this.modelQuery = this.modelQuery.skip(skip).limit(limit);
+
     return this;
   }
+
   fields() {
-    const fields =
-      (this?.query?.fields as string)?.split(',')?.join(' ') || '-__v';
-    this.modelQuery = this.modelQuery.select(fields);
+    const field = (this.query.field as string)?.split(',')?.join(' ') || '-__v';
+    this.modelQuery = this.modelQuery.select(field);
+    return this;
+  }
+  priceRange(minPrice?: number, maxPrice?: number) {
+    const priceFilter: Record<string, unknown> = {};
+    if (minPrice !== undefined) priceFilter.$gte = minPrice;
+    if (maxPrice !== undefined) priceFilter.$lte = maxPrice;
+
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      this.modelQuery = this.modelQuery.find({
+        price: priceFilter,
+      } as FilterQuery<T>);
+    }
+
     return this;
   }
   async countTotal() {
@@ -53,6 +73,7 @@ class queryBuilder<T> {
     const page = Number(this?.query?.page) || 1;
     const limit = Number(this?.query?.limit) || 10;
     const totalPage = Math.ceil(total / limit);
+
     return {
       page,
       limit,
@@ -62,4 +83,4 @@ class queryBuilder<T> {
   }
 }
 
-export default queryBuilder;
+export default QueryBuilder;

@@ -9,9 +9,12 @@ import httpStatus from 'http-status';
 import { User } from '../Auth/simpleAuth/register.model';
 const auth = (...requiredRole: TUserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies.accessToken;
-    console.log(token);
+    const token = req.headers.authorization;
     let decoded;
+    console.log('decides', { decoded, token });
+    if (!token || typeof token !== 'string') {
+      throw new AppError(httpStatus.UNAUTHORIZED, 'No token provided');
+    }
     try {
       decoded = jwt.verify(token, config.ACCESS_SECRET as string) as JwtPayload;
       // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
@@ -21,8 +24,7 @@ const auth = (...requiredRole: TUserRole[]) => {
     if (!decoded) {
       throw new AppError(httpStatus.UNAUTHORIZED, 'User is not authorized');
     }
-
-    const user = await User.findOne({ _id: decoded.id });
+    const user = await User.findOne({ _id: decoded.Id });
 
     if (!user) {
       throw new AppError(httpStatus.NOT_FOUND, 'Your User Id is Invalid!');

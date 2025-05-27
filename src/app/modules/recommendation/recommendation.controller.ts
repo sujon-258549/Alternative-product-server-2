@@ -11,7 +11,6 @@ const createRecommendation = catchAsync(async (req: Request, res: Response) => {
     req.body,
     user,
     id,
-    req.file,
   );
   sendSuccess(res, {
     statuscode: httpStatus.OK,

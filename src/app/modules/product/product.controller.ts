@@ -7,7 +7,6 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
   const data = req.body;
   const result = await productServes.CreateProductIntoDB(
     data,
-    req.file,
     // @ts-expect-error user
     req?.user,
   );
@@ -20,6 +19,7 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
 });
 const getAllProduct = catchAsync(async (req: Request, res: Response) => {
   const query = req?.query;
+
   const result = await productServes.FindAllProductIntoDb(query);
   sendSuccess(res, {
     statuscode: httpStatus.CREATED,
@@ -65,16 +65,10 @@ const findMyProduct = catchAsync(async (req: Request, res: Response) => {
 });
 const updateProduct = catchAsync(async (req: Request, res: Response) => {
   const data = req.body;
-  const file = req.file;
   const { id } = req.params;
   // @ts-expect-error user
   const user = req.user;
-  const result = await productServes.UpdateMyProductIntoDb(
-    data,
-    file,
-    user,
-    id,
-  );
+  const result = await productServes.UpdateMyProductIntoDb(data, user, id);
   sendSuccess(res, {
     statuscode: httpStatus.OK,
     success: true,

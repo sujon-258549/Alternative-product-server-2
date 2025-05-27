@@ -5,25 +5,17 @@ import Product from '../product/productr.mode';
 import { ObjectId, Types } from 'mongoose';
 import Recommendation from './recommendation.model';
 import queryBuilder from '../../builder/queryBuilder';
-import { sendImageToCloudinary } from '../utility/uploadImageCloudinary';
 
 const createRecommendationIntoDb = async (
   payload: TRecommendation,
   user: JwtPayload,
   id: string,
-  file: any,
 ) => {
   const findAuthorId = await Product.findById(id);
   payload.authorId = findAuthorId?.authorId as ObjectId;
   payload.recommendationAuthorId = user.Id as ObjectId;
   payload.productId = id as unknown as ObjectId;
-  if (file) {
-    const name = payload?.brandName;
-    const path = file?.path;
 
-    const productImage = await sendImageToCloudinary(name, path);
-    payload.recommendationImage = productImage?.secure_url as string;
-  }
   const result = await Recommendation.create(payload);
   return result;
 };
@@ -40,7 +32,16 @@ const myRecommendationIntoDb = async (
     Recommendation.find({ recommendationAuthorId: user.Id }),
     query,
   )
+    .search([
+      'categories',
+      'shortDescription',
+      'description',
+      'currency',
+      'productName',
+      'brandName',
+    ])
     .sort()
+    .fields()
     .filter();
   const meta = await recommendation.countTotal();
   const data = await recommendation.modelQuery;
@@ -54,7 +55,16 @@ const recommendationForMeIntoDb = async (
     Recommendation.find({ authorId: user.Id }),
     query,
   )
+    .search([
+      'categories',
+      'shortDescription',
+      'description',
+      'currency',
+      'productName',
+      'brandName',
+    ])
     .sort()
+    .fields()
     .filter();
   const meta = await recommendation.countTotal();
   const data = await recommendation.modelQuery;

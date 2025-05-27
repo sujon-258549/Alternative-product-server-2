@@ -48,7 +48,7 @@ const UserSchema = new Schema<TRegister>(
     },
     role: {
       type: String,
-      enum: ['admin', 'restaurant', 'user'],
+      enum: ['admin', 'user'],
       default: 'user',
       required: true,
     },
@@ -70,10 +70,6 @@ const UserSchema = new Schema<TRegister>(
     socialMesaLink: {
       type: socialMediaLinksSchema,
     },
-    isShop: {
-      type: Boolean,
-      default: false,
-    },
     secondaryPhone: {
       type: Number,
       required: true,
@@ -81,6 +77,8 @@ const UserSchema = new Schema<TRegister>(
     },
     profileImage: {
       type: String,
+      default:
+        'https://img.freepik.com/premium-vector/user-circle-with-blue-gradient-circle_78370-4727.jpg?ga=GA1.1.323587279.1748262069&semt=ais_items_boosted&w=740',
     },
     isBlock: {
       type: Boolean,

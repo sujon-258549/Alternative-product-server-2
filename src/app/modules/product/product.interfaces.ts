@@ -1,7 +1,6 @@
 import { ObjectId } from 'mongoose';
 
 export interface TProduct {
-  // Ownership
   authorId: ObjectId;
   // Core product information
   productName: string;

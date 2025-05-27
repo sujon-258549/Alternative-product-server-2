@@ -7,12 +7,23 @@ import config from '../../../config';
 
 const CreateUser = catchAsync(async (req: Request, res: Response) => {
   const data = req.body;
-  console.log(data);
-  const result = await UserServices.createUserIntoDB(data, req?.file);
+  const result = await UserServices.createUserIntoDB(data);
   sendSuccess(res, {
     statuscode: httpStatus.CREATED,
     success: true,
     message: 'User Registered successfully',
+    data: result,
+  });
+});
+const updateUser = catchAsync(async (req: Request, res: Response) => {
+  const data = req.body;
+  // @ts-expect-error user
+  const user = req.user;
+  const result = await UserServices.updateUserIntoDB(data, user);
+  sendSuccess(res, {
+    statuscode: httpStatus.CREATED,
+    success: true,
+    message: 'Update User successfully',
     data: result,
   });
 });
@@ -101,6 +112,7 @@ const setImageIntoUser = catchAsync(async (req: Request, res: Response) => {
 const getMe = catchAsync(async (req: Request, res: Response) => {
   // @ts-expect-error user
   const token = req?.user;
+  console.log('........................................', token);
   const result = await UserServices.getMeFromDB(token);
   sendSuccess(res, {
     statuscode: httpStatus.CREATED,
@@ -118,4 +130,5 @@ export const UserController = {
   changePassword,
   setImageIntoUser,
   getMe,
+  updateUser,
 };

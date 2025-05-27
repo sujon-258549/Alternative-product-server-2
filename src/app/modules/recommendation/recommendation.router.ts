@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response, Router } from 'express';
-import { upload } from '../utility/uploadImageCloudinary';
+import { Router } from 'express';
+
 import auth from '../utility/auth';
 import { UserRole } from '../Auth/simpleAuth/register.const';
 import { recommendationController } from './recommendation.controller';
@@ -9,12 +9,6 @@ const router = Router();
 router.post(
   '/create-product/:id',
   auth(UserRole.user),
-  upload.single('file'),
-  (req: Request, res: Response, next: NextFunction) => {
-    req.body = JSON.parse(req.body.data);
-    next();
-  },
-  //   auth(UserRole.user),
   recommendationController.createRecommendation,
 );
 router.get(
@@ -46,11 +40,6 @@ router.delete(
 router.patch(
   'update-my-recommendation/:id',
   auth(UserRole.user),
-  upload.single('file'),
-  (req: Request, res: Response, next: NextFunction) => {
-    req.body = JSON.parse(req.body.data);
-    next();
-  },
   recommendationController.updateMyRecommendation,
 );
 
