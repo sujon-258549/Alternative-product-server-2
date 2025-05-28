@@ -11,7 +11,6 @@ const auth = (...requiredRole: TUserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization;
     let decoded;
-    console.log('decides', { decoded, token });
     if (!token || typeof token !== 'string') {
       throw new AppError(httpStatus.UNAUTHORIZED, 'No token provided');
     }

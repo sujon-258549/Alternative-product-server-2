@@ -31,7 +31,6 @@ const updateUserIntoDB = async (
   return result;
 };
 const loginUserIntoDB = async (payload: TLogin) => {
-  console.log(payload);
   const existUser = await User.findOne({ email: payload.email });
   if (!existUser) {
     throw new AppError(httpStatus.UNAUTHORIZED, 'User not found.');
@@ -61,7 +60,6 @@ const loginUserIntoDB = async (payload: TLogin) => {
     config.REFRESH_SECRET as string,
     config.REFRESH_EXPIRE_IN as string,
   );
-  console.log({ accessToken, refreshToken });
   return {
     accessToken,
     refreshToken,
@@ -118,7 +116,6 @@ const resetPassword = async (
   data: { newPassword: string; email: string },
 ) => {
   let decoded;
-  console.log(decoded);
   try {
     decoded = jwt.verify(payload, config.ACCESS_SECRET as string) as JwtPayload;
 

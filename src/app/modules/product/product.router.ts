@@ -13,13 +13,17 @@ router.post(
 );
 // get all product
 router.get('/', ProductController.getAllProduct);
-router.get('/:id', ProductController.getSingleProduct);
 router.get('/my-product', auth('user'), ProductController.findMyProduct);
+router.get('/:id', ProductController.getSingleProduct);
 router.delete(
   '/my-product/:id',
   auth('user'),
   ProductController.deleteMyProduct,
 );
-router.patch('/:id', auth(UserRole.user), ProductController.updateProduct);
+router.patch(
+  '/my-product/:id',
+  auth(UserRole.user),
+  ProductController.updateProduct,
+);
 
 export const product = router;

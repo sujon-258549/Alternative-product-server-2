@@ -4,7 +4,6 @@ import { contactServices } from './contactUs.services';
 import sendSuccess from '../utility/send-success';
 import catchAsync from '../utility/catchAsync';
 const createContact = catchAsync(async (req: Request, res: Response) => {
-  console.log(req.body);
   const result = await contactServices.createContactIntoDB(req.body);
 
   sendSuccess(res, {

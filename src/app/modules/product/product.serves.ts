@@ -16,7 +16,11 @@ const CreateProductIntoDB = async (payload: TProduct, user: JwtPayload) => {
   return result;
 };
 const FindAllProductIntoDb = async (query: Record<string, unknown>) => {
-  console.log(query);
+  const { minPrice, maxPrice } = query as {
+    minPrice?: string | number;
+    maxPrice?: string | number;
+  };
+  console.log('Min and Max Prices', minPrice, maxPrice, query);
   const result = new queryBuilder(Product.find().populate('authorId'), query)
     .search([
       'productName',
@@ -28,7 +32,13 @@ const FindAllProductIntoDb = async (query: Record<string, unknown>) => {
     ])
     .sort()
     .fields()
-    .filter();
+    .filter()
+    .paginate()
+    .priceRange(
+      minPrice != null ? Number(minPrice) : undefined,
+      maxPrice != null ? Number(maxPrice) : undefined,
+    );
+
   const meta = await result.countTotal();
   const data = await result.modelQuery;
   return { meta, data };
@@ -48,6 +58,7 @@ const findMyProductIntoDb = async (
   query: Record<string, unknown>,
   user: JwtPayload,
 ) => {
+  console.log(user);
   const result = new queryBuilder(
     Product.find({ authorId: user.Id }).populate('authorId'),
     query,
@@ -62,6 +73,7 @@ const findMyProductIntoDb = async (
     ])
     .sort()
     .fields()
+    .paginate()
     .filter();
   const meta = await result.countTotal();
   const data = await result.modelQuery;
@@ -72,14 +84,32 @@ const UpdateMyProductIntoDb = async (
   user: JwtPayload,
   id: string,
 ) => {
-  const existId = await Product.findOne({ authorId: user?.id, _id: id });
-  if (existId) {
-    throw new AppError(501, 'Not user Exist!');
+  // Validate payload is not empty
+  if (!payload || Object.keys(payload).length === 0) {
+    throw new AppError(400, 'Update payload cannot be empty');
   }
 
-  payload.authorId = user.id;
-  const result = await Product.create(payload);
-  return result;
+  // Find the product that belongs to this user
+  const existingProduct = await Product.findOne({ _id: id, authorId: user.Id });
+
+  if (!existingProduct) {
+    throw new AppError(
+      404,
+      'Product not found or you are not authorized to update it',
+    );
+  }
+
+  // Perform the update
+  const updatedProduct = await Product.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!updatedProduct) {
+    throw new AppError(500, 'Failed to update product');
+  }
+
+  return updatedProduct;
 };
 
 export const productServes = {

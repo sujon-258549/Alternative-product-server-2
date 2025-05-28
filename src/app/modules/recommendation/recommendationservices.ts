@@ -41,6 +41,7 @@ const myRecommendationIntoDb = async (
       'brandName',
     ])
     .sort()
+    .paginate()
     .fields()
     .filter();
   const meta = await recommendation.countTotal();
@@ -64,6 +65,7 @@ const recommendationForMeIntoDb = async (
       'brandName',
     ])
     .sort()
+    .paginate()
     .fields()
     .filter();
   const meta = await recommendation.countTotal();

@@ -19,7 +19,6 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
 });
 const getAllProduct = catchAsync(async (req: Request, res: Response) => {
   const query = req?.query;
-
   const result = await productServes.FindAllProductIntoDb(query);
   sendSuccess(res, {
     statuscode: httpStatus.CREATED,

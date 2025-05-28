@@ -25,11 +25,13 @@ class QueryBuilder<T> {
 
   filter() {
     const queryObject = { ...this.query };
-    console.log(queryObject);
+
     const excludeField = ['searchTerm', 'sort', 'limit', 'page', 'field'];
-    //   delete esrch tram
+
+    //   delete serch tarm
     excludeField.forEach((el) => delete queryObject[el]);
     this.modelQuery = this.modelQuery.find(queryObject as FilterQuery<T>);
+
     return this;
   }
 
@@ -42,24 +44,19 @@ class QueryBuilder<T> {
 
   paginate() {
     const page = Number(this?.query?.page) || 1;
-    const limit = Number(this?.query?.limit) || 50;
+    const limit = Number(this?.query?.limit) || 10;
     const skip = (page - 1) * limit;
     this.modelQuery = this.modelQuery.skip(skip).limit(limit);
 
     return this;
   }
-
-  fields() {
-    const field = (this.query.field as string)?.split(',')?.join(' ') || '-__v';
-    this.modelQuery = this.modelQuery.select(field);
-    return this;
-  }
   priceRange(minPrice?: number, maxPrice?: number) {
+    console.log(minPrice, maxPrice);
     const priceFilter: Record<string, unknown> = {};
-    if (minPrice !== undefined) priceFilter.$gte = minPrice;
-    if (maxPrice !== undefined) priceFilter.$lte = maxPrice;
+    if (minPrice != null) priceFilter.$gte = minPrice;
+    if (maxPrice != null) priceFilter.$lte = maxPrice;
 
-    if (minPrice !== undefined || maxPrice !== undefined) {
+    if (Object.keys(priceFilter).length) {
       this.modelQuery = this.modelQuery.find({
         price: priceFilter,
       } as FilterQuery<T>);
@@ -67,11 +64,30 @@ class QueryBuilder<T> {
 
     return this;
   }
+  fields() {
+    const field = (this.query.field as string)?.split(',')?.join(' ') || '-__v';
+    this.modelQuery = this.modelQuery.select(field);
+    return this;
+  }
+  // async countTotal() {
+  //   const totalQueries = this.modelQuery.getFilter();
+  //   const limit = Number(this?.query?.limit) || 10;
+  //   const total = await this.modelQuery.model.countDocuments(totalQueries);
+  //   const page = Number(this?.query?.page) || 1;
+  //   const totalPage = Math.ceil(total / limit);
+
+  //   return {
+  //     page,
+  //     limit,
+  //     total,
+  //     totalPage,
+  //   };
+  // }
   async countTotal() {
     const totalQueries = this.modelQuery.getFilter();
     const total = await this.modelQuery.model.countDocuments(totalQueries);
-    const page = Number(this?.query?.page) || 1;
-    const limit = Number(this?.query?.limit) || 10;
+    const page = Number(this.query.page) || 1;
+    const limit = Number(this.query.limit) || 10;
     const totalPage = Math.ceil(total / limit);
 
     return {

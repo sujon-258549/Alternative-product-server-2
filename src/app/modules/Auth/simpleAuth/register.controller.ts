@@ -112,7 +112,6 @@ const setImageIntoUser = catchAsync(async (req: Request, res: Response) => {
 const getMe = catchAsync(async (req: Request, res: Response) => {
   // @ts-expect-error user
   const token = req?.user;
-  console.log('........................................', token);
   const result = await UserServices.getMeFromDB(token);
   sendSuccess(res, {
     statuscode: httpStatus.CREATED,

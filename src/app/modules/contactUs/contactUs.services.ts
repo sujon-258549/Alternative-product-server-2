@@ -6,7 +6,6 @@ import { User } from '../Auth/simpleAuth/register.model';
 import AppError from '../../middleware/error/appError';
 
 const createContactIntoDB = async (userData: IContact) => {
-  console.log(userData);
   const existUser = await User.findOne({ id: userData.sendId });
 
   // This condition is backwards - you're throwing if user EXISTS
@@ -23,7 +22,6 @@ const contactForMeIntoDB = async (
   user: JwtPayload,
   query: Record<string, unknown>,
 ) => {
-  console.log(user.id);
   const newUser = new queryBuilder(
     Contact.find({ sendId: user.id }).populate('id'),
     query,
