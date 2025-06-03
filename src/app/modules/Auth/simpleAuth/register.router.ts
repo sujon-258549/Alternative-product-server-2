@@ -7,14 +7,15 @@ import { Router } from 'express';
 
 const router = Router();
 router.post('/register', UserController.CreateUser);
-router.patch('/update', UserController.updateUser);
+router.post('/forget-password', UserController.forgetPassword);
+
 router.post('/login', UserController.loginUser);
 router.post(
   '/create-access-token',
   zodValidation(userValidation.refreshTokenSchema),
   UserController.refreshTokenUseCreateSecretToken,
 );
-router.post('/forget-password', UserController.forgetPassword);
+router.post('/set-image', auth(UserRole.user), UserController.setImageIntoUser);
 router.post(
   '/reset-password',
 
@@ -26,5 +27,7 @@ router.post(
   UserController.changePassword,
 );
 router.get('/get-me', auth(UserRole.user), UserController.getMe);
-router.post('/set-image', auth(UserRole.user), UserController.setImageIntoUser);
+router.get('/', UserController.getAllUser);
+
+router.patch('/update', auth('user'), UserController.updateUser);
 export const userRouter = router;

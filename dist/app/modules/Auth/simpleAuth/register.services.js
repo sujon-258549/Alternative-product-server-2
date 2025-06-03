@@ -13,6 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserServices = void 0;
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const appError_1 = __importDefault(require("../../../middleware/error/appError"));
 const register_model_1 = require("./register.model");
@@ -21,18 +23,24 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const auth_utils_1 = require("./auth.utils");
 const config_1 = __importDefault(require("../../../config"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const uploadImageCloudinary_1 = require("../../utility/uploadImageCloudinary");
 const sendEmail_1 = require("../../utility/sendEmail");
-const createUserIntoDB = (payload, file) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log({ file });
-    const profileImage = yield (0, uploadImageCloudinary_1.sendImageCloudinary)(payload.phone.toString(), file === null || file === void 0 ? void 0 : file.path);
-    // @ts-expect-error url
-    payload.profileImage = profileImage === null || profileImage === void 0 ? void 0 : profileImage.secure_url;
+const uploadImageCloudinary_1 = require("../../utility/uploadImageCloudinary");
+const queryBuilder_1 = __importDefault(require("../../../builder/queryBuilder"));
+// create user
+const createUserIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield register_model_1.User.create(payload);
     return result;
 });
+const updateUserIntoDB = (payload, user) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(user);
+    const existUser = yield register_model_1.User.findOne({ email: user.email });
+    if (!existUser) {
+        throw new appError_1.default(http_status_1.default.UNAUTHORIZED, 'User not found.');
+    }
+    const result = yield register_model_1.User.findOneAndUpdate({ email: existUser.email }, payload, { new: true });
+    return result;
+});
 const loginUserIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(payload);
     const existUser = yield register_model_1.User.findOne({ email: payload.email });
     if (!existUser) {
         throw new appError_1.default(http_status_1.default.UNAUTHORIZED, 'User not found.');
@@ -44,7 +52,7 @@ const loginUserIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function*
     const JwtPayload = {
         email: existUser.email,
         role: existUser.role,
-        id: existUser._id,
+        Id: existUser._id,
     };
     const accessToken = (0, auth_utils_1.createToken)(
     // @ts-expect-error token
@@ -52,7 +60,6 @@ const loginUserIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function*
     const refreshToken = (0, auth_utils_1.createToken)(
     // @ts-expect-error token
     JwtPayload, config_1.default.REFRESH_SECRET, config_1.default.REFRESH_EXPIRE_IN);
-    console.log({ accessToken, refreshToken });
     return {
         accessToken,
         refreshToken,
@@ -67,53 +74,81 @@ const createRefreshTokenIntoDB = (token) => __awaiter(void 0, void 0, void 0, fu
     const JwtPayload = {
         email: existUser.email,
         role: existUser.role,
-        id: existUser._id,
+        Id: existUser._id,
     };
     const accessToken = (0, auth_utils_1.createToken)(
     // @ts-expect-error token
     JwtPayload, config_1.default.ACCESS_SECRET, config_1.default.ACCESS_EXPIRE_IN);
     return { accessToken };
 });
-const forgetPassword = (email) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(email);
-    const existEmail = yield register_model_1.User.findOne({ email: email });
-    if (!existEmail) {
+// const forgetPassword = async (userInfo: { email: string }) => {
+//   const existEmail = await User.findOne({ email: userInfo.email });
+//   console.log('userInfo', existEmail);
+//   if (!existEmail) {
+//     throw new AppError(httpStatus.UNAUTHORIZED, 'User not found.');
+//   }
+//   const JwtPayload = {
+//     email: existEmail.email,
+//     role: existEmail.role,
+//     Id: existEmail._id,
+//   };
+//   const accessToken = createToken(
+//     // @ts-expect-error token
+//     JwtPayload,
+//     config.ACCESS_SECRET as string,
+//     '10m',
+//   );
+//   const resetUrlLink = `${config.RESET_UI_LINK}?email=${existEmail?.email}&token=${accessToken}`;
+//   sendEmail(existEmail.email, resetUrlLink);
+// };
+const forgetPassword = (userInfo) => __awaiter(void 0, void 0, void 0, function* () {
+    // Check if the user exists by email
+    console.log(userInfo);
+    const existingUser = yield register_model_1.User.findOne({ email: userInfo.email });
+    if (!existingUser) {
         throw new appError_1.default(http_status_1.default.UNAUTHORIZED, 'User not found.');
     }
-    const JwtPayload = {
-        email: existEmail.email,
-        role: existEmail.role,
-        id: existEmail._id,
+    // Create the payload for the JWT
+    const jwtPayload = {
+        email: existingUser.email,
+        role: existingUser.role,
+        id: existingUser._id.toString(),
     };
-    const accessToken = (0, auth_utils_1.createToken)(
-    // @ts-expect-error token
-    JwtPayload, config_1.default.ACCESS_SECRET, '10m');
-    const resetUrlLink = `${config_1.default.RESET_UI_LINK}?email=${existEmail === null || existEmail === void 0 ? void 0 : existEmail.email}&token=${accessToken}`;
-    console.log(resetUrlLink);
-    (0, sendEmail_1.sendEmail)(existEmail.email, resetUrlLink);
+    // Generate a short-lived token (10 minutes)
+    const token = (0, auth_utils_1.createToken)(jwtPayload, config_1.default.ACCESS_SECRET, '10m');
+    // Generate the reset password link
+    const resetUrl = `${config_1.default.RESET_UI_LINK}?email=${existingUser.email}&token=${token}`;
+    // Send the email
+    yield (0, sendEmail_1.sendEmail)(existingUser.email, resetUrl);
 });
-const resetPassword = (payload, data) => __awaiter(void 0, void 0, void 0, function* () {
-    let decoded;
-    try {
-        decoded = jsonwebtoken_1.default.verify(payload, config_1.default.ACCESS_SECRET);
-        // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+const resetPassword = (data) => __awaiter(void 0, void 0, void 0, function* () {
+    // 1. Verify JWT Token
+    const payload = JSON.parse(atob(data.token.split('.')[1]));
+    console.log('Token Payload fsadfsa :', payload === null || payload === void 0 ? void 0 : payload.email);
+    // Now use the token (e.g., decode or verify)
+    // let decoded: JwtPayload;
+    // try {
+    //   decoded = jwt.verify(payload, config.ACCESS_SECRET as string) as JwtPayload;
+    // } catch (err) {
+    //   throw new AppError(httpStatus.UNAUTHORIZED, 'Invalid or expired token');
+    // }
+    // 3. Check User Existence
+    const user = yield register_model_1.User.findOne({ _id: payload === null || payload === void 0 ? void 0 : payload.id });
+    if (!user) {
+        throw new appError_1.default(http_status_1.default.NOT_FOUND, 'User not found');
     }
-    catch (err) {
-        throw new appError_1.default(http_status_1.default.UNAUTHORIZED, 'User is not authorized');
+    // // 4. Verify Email Match
+    // if (data.email !== user.email) {
+    //   throw new AppError(httpStatus.UNAUTHORIZED, 'Email does not match token');
+    // }
+    // 5. Hash New Password
+    const hashedPassword = yield bcrypt_1.default.hash(data.newPassword, 10); // Salt rounds: 10
+    // 6. Update User Password
+    const updatedUser = yield register_model_1.User.findOneAndUpdate({ _id: payload.id }, { password: hashedPassword }, { new: true });
+    if (!updatedUser) {
+        throw new appError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Failed to update password');
     }
-    if (!decoded) {
-        throw new appError_1.default(http_status_1.default.UNAUTHORIZED, 'User is not authorized');
-    }
-    const user = yield register_model_1.User.findOne({ _id: decoded.id });
-    if (data.email != (user === null || user === void 0 ? void 0 : user.email)) {
-        throw new appError_1.default(http_status_1.default.UNAUTHORIZED, 'User is not authorized');
-    }
-    console.log(user.email);
-    const hasPassword = yield bcrypt_1.default.hash(data === null || data === void 0 ? void 0 : data.newPassword, 5);
-    const result = yield register_model_1.User.findOneAndUpdate({ email: user.email }, // ✅ this is correct for filtering by email
-    { password: hasPassword }, // ✅ new password to set
-    { new: true });
-    return result;
+    return updatedUser;
 });
 const changePassword = (payload, token) => __awaiter(void 0, void 0, void 0, function* () {
     const existEmail = yield register_model_1.User.findOne({ email: token === null || token === void 0 ? void 0 : token.email });
@@ -130,6 +165,39 @@ const changePassword = (payload, token) => __awaiter(void 0, void 0, void 0, fun
     { new: true });
     return result;
 });
+const getAllUserFromDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(query);
+    const result = new queryBuilder_1.default(register_model_1.User.find().select('-password'), query)
+        .search(['fullName', 'email'])
+        .filter()
+        .fields()
+        .sort();
+    const meta = yield result.countTotal();
+    const data = yield result.modelQuery;
+    return { meta, data };
+});
+const getMeFromDB = (user) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield register_model_1.User.findById(user.Id).select('-password');
+    return result;
+});
+const setImageIntoUser = (file, user) => __awaiter(void 0, void 0, void 0, function* () {
+    const { Id } = user;
+    const isExistUser = yield register_model_1.User.findOne({ Id });
+    if (!isExistUser) {
+        return new appError_1.default(http_status_1.default.NOT_FOUND, 'User not found');
+    }
+    if (file) {
+        const path = file === null || file === void 0 ? void 0 : file.path;
+        const name = isExistUser.fullName.replace(/\s+/g, '_').toLowerCase();
+        const { secure_url } = (yield (0, uploadImageCloudinary_1.sendImageToCloudinary)(name, path));
+        if (!secure_url) {
+            return new appError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Image not found');
+        }
+        isExistUser.profileImage = secure_url;
+        return yield isExistUser.save();
+    }
+    return isExistUser;
+});
 exports.UserServices = {
     createUserIntoDB,
     loginUserIntoDB,
@@ -137,4 +205,8 @@ exports.UserServices = {
     forgetPassword,
     resetPassword,
     changePassword,
+    setImageIntoUser,
+    getMeFromDB,
+    updateUserIntoDB,
+    getAllUserFromDB,
 };

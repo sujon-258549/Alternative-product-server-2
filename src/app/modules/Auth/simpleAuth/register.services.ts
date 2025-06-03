@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import AppError from '../../../middleware/error/appError';
 import { TLogin, TRegister } from './register.interface';
@@ -9,6 +11,7 @@ import config from '../../../config';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { sendEmail } from '../../utility/sendEmail';
 import { sendImageToCloudinary } from '../../utility/uploadImageCloudinary';
+import QueryBuilder from '../../../builder/queryBuilder';
 // create user
 const createUserIntoDB = async (payload: TRegister) => {
   const result = await User.create(payload);
@@ -19,6 +22,7 @@ const updateUserIntoDB = async (
   payload: Partial<TRegister>,
   user: JwtPayload,
 ) => {
+  console.log(user);
   const existUser = await User.findOne({ email: user.email });
   if (!existUser) {
     throw new AppError(httpStatus.UNAUTHORIZED, 'User not found.');
@@ -90,56 +94,101 @@ const createRefreshTokenIntoDB = async (token: string) => {
   );
   return { accessToken };
 };
-const forgetPassword = async (email: string) => {
-  const existEmail = await User.findOne({ email: email });
-  if (!existEmail) {
+// const forgetPassword = async (userInfo: { email: string }) => {
+//   const existEmail = await User.findOne({ email: userInfo.email });
+//   console.log('userInfo', existEmail);
+//   if (!existEmail) {
+//     throw new AppError(httpStatus.UNAUTHORIZED, 'User not found.');
+//   }
+
+//   const JwtPayload = {
+//     email: existEmail.email,
+//     role: existEmail.role,
+//     Id: existEmail._id,
+//   };
+//   const accessToken = createToken(
+//     // @ts-expect-error token
+//     JwtPayload,
+//     config.ACCESS_SECRET as string,
+//     '10m',
+//   );
+
+//   const resetUrlLink = `${config.RESET_UI_LINK}?email=${existEmail?.email}&token=${accessToken}`;
+//   sendEmail(existEmail.email, resetUrlLink);
+// };
+const forgetPassword = async (userInfo: { email: string }) => {
+  // Check if the user exists by email
+  console.log(userInfo);
+  const existingUser = await User.findOne({ email: userInfo.email });
+
+  if (!existingUser) {
     throw new AppError(httpStatus.UNAUTHORIZED, 'User not found.');
   }
 
-  const JwtPayload = {
-    email: existEmail.email,
-    role: existEmail.role,
-    Id: existEmail._id,
+  // Create the payload for the JWT
+  const jwtPayload = {
+    email: existingUser.email,
+    role: existingUser.role,
+    id: existingUser._id.toString(),
   };
-  const accessToken = createToken(
-    // @ts-expect-error token
-    JwtPayload,
-    config.ACCESS_SECRET as string,
-    '10m',
-  );
 
-  const resetUrlLink = `${config.RESET_UI_LINK}?email=${existEmail?.email}&token=${accessToken}`;
-  sendEmail(existEmail.email, resetUrlLink);
+  // Generate a short-lived token (10 minutes)
+  const token = createToken(jwtPayload, config.ACCESS_SECRET as string, '10m');
+
+  // Generate the reset password link
+  const resetUrl = `${config.RESET_UI_LINK}?email=${existingUser.email}&token=${token}`;
+
+  // Send the email
+  await sendEmail(existingUser.email, resetUrl);
 };
-const resetPassword = async (
-  payload: any,
-  data: { newPassword: string; email: string },
-) => {
-  let decoded;
-  try {
-    decoded = jwt.verify(payload, config.ACCESS_SECRET as string) as JwtPayload;
 
-    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-  } catch (err) {
-    throw new AppError(httpStatus.UNAUTHORIZED, 'User is not authorized');
-  }
-  if (!decoded) {
-    throw new AppError(httpStatus.UNAUTHORIZED, 'User is not authorized');
+const resetPassword = async (data: {
+  token: string;
+  newPassword: string;
+  email: string;
+}) => {
+  // 1. Verify JWT Token
+  const payload = JSON.parse(atob(data.token.split('.')[1]));
+  console.log('Token Payload fsadfsa :', payload?.email);
+
+  // Now use the token (e.g., decode or verify)
+
+  // let decoded: JwtPayload;
+  // try {
+  //   decoded = jwt.verify(payload, config.ACCESS_SECRET as string) as JwtPayload;
+  // } catch (err) {
+  //   throw new AppError(httpStatus.UNAUTHORIZED, 'Invalid or expired token');
+  // }
+
+  // 3. Check User Existence
+  const user = await User.findOne({ _id: payload?.id });
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
 
-  const user = await User.findOne({ _id: decoded.id });
-  if (data.email != user?.email) {
-    throw new AppError(httpStatus.UNAUTHORIZED, 'User is not authorized');
-  }
+  // // 4. Verify Email Match
+  // if (data.email !== user.email) {
+  //   throw new AppError(httpStatus.UNAUTHORIZED, 'Email does not match token');
+  // }
 
-  const hasPassword = await bcrypt.hash(data?.newPassword, 5);
-  const result = await User.findOneAndUpdate(
-    { email: user.email }, // ✅ this is correct for filtering by email
-    { password: hasPassword }, // ✅ new password to set
-    { new: true }, // ✅ optional: returns the updated document
+  // 5. Hash New Password
+  const hashedPassword = await bcrypt.hash(data.newPassword, 10); // Salt rounds: 10
+
+  // 6. Update User Password
+  const updatedUser = await User.findOneAndUpdate(
+    { _id: payload.id },
+    { password: hashedPassword },
+    { new: true },
   );
 
-  return result;
+  if (!updatedUser) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Failed to update password',
+    );
+  }
+
+  return updatedUser;
 };
 
 const changePassword = async (
@@ -167,6 +216,17 @@ const changePassword = async (
   return result;
 };
 
+const getAllUserFromDB = async (query: Record<string, unknown>) => {
+  console.log(query);
+  const result = new QueryBuilder(User.find().select('-password'), query)
+    .search(['fullName', 'email'])
+    .filter()
+    .fields()
+    .sort();
+  const meta = await result.countTotal();
+  const data = await result.modelQuery;
+  return { meta, data };
+};
 const getMeFromDB = async (user: JwtPayload) => {
   const result = await User.findById(user.Id).select('-password');
   return result;
@@ -206,4 +266,5 @@ export const UserServices = {
   setImageIntoUser,
   getMeFromDB,
   updateUserIntoDB,
+  getAllUserFromDB,
 };

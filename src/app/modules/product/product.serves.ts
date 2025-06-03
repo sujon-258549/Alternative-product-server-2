@@ -88,8 +88,12 @@ const UpdateMyProductIntoDb = async (
   if (!payload || Object.keys(payload).length === 0) {
     throw new AppError(400, 'Update payload cannot be empty');
   }
-
+  if (typeof payload?.isDigital === 'string') {
+    payload.isDigital =
+      payload.isDigital && payload.isDigital === 'yes' ? true : false;
+  }
   // Find the product that belongs to this user
+
   const existingProduct = await Product.findOne({ _id: id, authorId: user.Id });
 
   if (!existingProduct) {

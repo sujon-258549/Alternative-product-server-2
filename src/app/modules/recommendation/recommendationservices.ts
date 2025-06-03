@@ -15,7 +15,6 @@ const createRecommendationIntoDb = async (
   payload.authorId = findAuthorId?.authorId as ObjectId;
   payload.recommendationAuthorId = user.Id as ObjectId;
   payload.productId = id as unknown as ObjectId;
-
   const result = await Recommendation.create(payload);
   return result;
 };
@@ -24,12 +23,41 @@ const fondSpecifyRecommendationIntoDb = async (id: string) => {
   const result = await Recommendation.find({ productId: id });
   return result;
 };
+const allRecommendedIntoDb = async (query: Record<string, unknown>) => {
+  console.log(query);
+  const recommendation = new queryBuilder(
+    Recommendation.find()
+      .populate('productId')
+      .populate('recommendationAuthorId')
+      .populate('authorId'),
+    query,
+  )
+    .search([
+      'categories',
+      'shortDescription',
+      'description',
+      'currency',
+      'productName',
+      'brandName',
+    ])
+    .sort()
+    .paginate()
+    .fields()
+    .filter();
+  const meta = await recommendation.countTotal();
+  const data = await recommendation.modelQuery;
+  return { meta, data };
+};
 const myRecommendationIntoDb = async (
   user: JwtPayload,
   query: Record<string, unknown>,
 ) => {
+  console.log(query);
   const recommendation = new queryBuilder(
-    Recommendation.find({ recommendationAuthorId: user.Id }),
+    Recommendation.find({ recommendationAuthorId: user.Id })
+      .populate('productId')
+      .populate('recommendationAuthorId')
+      .populate('authorId'),
     query,
   )
     .search([
@@ -53,7 +81,37 @@ const recommendationForMeIntoDb = async (
   query: Record<string, unknown>,
 ) => {
   const recommendation = new queryBuilder(
-    Recommendation.find({ authorId: user.Id }),
+    Recommendation.find({ authorId: user.Id })
+      .populate('productId')
+      .populate('recommendationAuthorId')
+      .populate('authorId'),
+    query,
+  )
+    .search([
+      'categories',
+      'shortDescription',
+      'description',
+      'currency',
+      'productName',
+      'brandName',
+    ])
+    .sort()
+    .paginate()
+    .fields()
+    .filter();
+  const meta = await recommendation.countTotal();
+  const data = await recommendation.modelQuery;
+  return { meta, data };
+};
+const recommendationRelatedProductIntoDb = async (
+  id: string,
+  query: Record<string, unknown>,
+) => {
+  const recommendation = new queryBuilder(
+    Recommendation.find({ productId: id })
+      .populate('productId')
+      .populate('recommendationAuthorId')
+      .populate('authorId'),
     query,
   )
     .search([
@@ -81,7 +139,10 @@ const deleteMyRecommendationIntoDb = async (id: string, user: JwtPayload) => {
   return result;
 };
 const findSingleRecommendationIntoDb = async (id: string) => {
-  const result = await Recommendation.findById(id);
+  const result = await Recommendation.findById(id)
+    .populate('productId')
+    .populate('recommendationAuthorId')
+    .populate('authorId');
   return result;
 };
 const updateRecommendationIntoDb = async (
@@ -89,10 +150,14 @@ const updateRecommendationIntoDb = async (
   user: JwtPayload,
   payload: Partial<TRecommendation>,
 ) => {
+  if (typeof payload?.isDigital === 'string') {
+    payload.isDigital =
+      payload.isDigital && payload.isDigital === 'yes' ? true : false;
+  }
   const result = await Recommendation.findOneAndUpdate(
     {
       _id: new Types.ObjectId(id),
-      recommendationAuthorId: new Types.ObjectId(user.userId),
+      recommendationAuthorId: user.userId,
     },
     payload,
     {
@@ -111,4 +176,6 @@ export const recommendationServices = {
   deleteMyRecommendationIntoDb,
   findSingleRecommendationIntoDb,
   updateRecommendationIntoDb,
+  allRecommendedIntoDb,
+  recommendationRelatedProductIntoDb,
 };

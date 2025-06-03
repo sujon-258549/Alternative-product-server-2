@@ -7,20 +7,16 @@ import { recommendationController } from './recommendation.controller';
 const router = Router();
 
 router.post(
-  '/create-product/:id',
+  '/create-recommended/:id',
   auth(UserRole.user),
   recommendationController.createRecommendation,
 );
 router.get(
-  '/product-recommendation',
+  '/product-recommendation/:id',
   auth(UserRole.user),
   recommendationController.findSpecifyRecommendation,
 );
-router.get(
-  '/:id',
-  auth(UserRole.user),
-  recommendationController.findSingleRecommendation,
-);
+router.get('/', recommendationController.findAllRecommendation);
 
 router.get(
   '/my-recommendation',
@@ -32,13 +28,24 @@ router.get(
   auth(UserRole.user),
   recommendationController.recommendationForMe,
 );
+router.get(
+  '/recommendation-related-product/:id',
+  auth(UserRole.user),
+  recommendationController.recommendationRelatedProduct,
+);
+router.get(
+  '/:id',
+  auth(UserRole.user),
+  recommendationController.findSingleRecommendation,
+);
+
 router.delete(
   '/my-recommendation/:id',
   auth('user'),
   recommendationController.deleteRecommendation,
 );
 router.patch(
-  'update-my-recommendation/:id',
+  '/update-my-recommendation/:id',
   auth(UserRole.user),
   recommendationController.updateMyRecommendation,
 );

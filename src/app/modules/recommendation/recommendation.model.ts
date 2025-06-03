@@ -12,6 +12,7 @@ const recommendationSchema = new Schema<TRecommendation>(
     productId: {
       type: Schema.Types.ObjectId,
       required: true,
+      ref: 'product',
     },
     productName: { type: String, required: true },
     brandName: { type: String, required: true },
@@ -20,10 +21,9 @@ const recommendationSchema = new Schema<TRecommendation>(
     currency: { type: String, required: true },
     description: { type: String, required: true },
     shortDescription: { type: String, required: true },
-    isInStock: { type: Boolean, required: true },
     categories: { type: String, required: true },
     weight: { type: Number, required: true },
-    isDigital: { type: String, required: true },
+    isDigital: { type: Boolean, required: true },
     recommendationImage: { type: String },
   },
   {

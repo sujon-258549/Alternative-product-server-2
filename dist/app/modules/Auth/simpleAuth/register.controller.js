@@ -20,12 +20,23 @@ const http_status_1 = __importDefault(require("http-status"));
 const config_1 = __importDefault(require("../../../config"));
 const CreateUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const data = req.body;
-    console.log(data);
-    const result = yield register_services_1.UserServices.createUserIntoDB(data, req === null || req === void 0 ? void 0 : req.file);
+    const result = yield register_services_1.UserServices.createUserIntoDB(data);
     (0, send_success_1.default)(res, {
         statuscode: http_status_1.default.CREATED,
         success: true,
         message: 'User Registered successfully',
+        data: result,
+    });
+}));
+const updateUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const data = req.body;
+    // @ts-expect-error user
+    const user = req === null || req === void 0 ? void 0 : req.user;
+    const result = yield register_services_1.UserServices.updateUserIntoDB(data, user);
+    (0, send_success_1.default)(res, {
+        statuscode: http_status_1.default.CREATED,
+        success: true,
+        message: 'Update User successfully',
         data: result,
     });
 }));
@@ -62,8 +73,8 @@ const refreshTokenUseCreateSecretToken = (0, catchAsync_1.default)((req, res) =>
     });
 }));
 const forgetPassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email } = req.body;
-    const result = yield register_services_1.UserServices.forgetPassword(email);
+    const user = req.body;
+    const result = yield register_services_1.UserServices.forgetPassword(user);
     (0, send_success_1.default)(res, {
         statuscode: http_status_1.default.CREATED,
         success: true,
@@ -72,9 +83,8 @@ const forgetPassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
     });
 }));
 const resetPassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const body = req.headers.authorization;
     const data = req.body;
-    const result = yield register_services_1.UserServices.resetPassword(body, data);
+    const result = yield register_services_1.UserServices.resetPassword(data);
     (0, send_success_1.default)(res, {
         statuscode: http_status_1.default.CREATED,
         success: true,
@@ -94,6 +104,39 @@ const changePassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
         data: result,
     });
 }));
+const setImageIntoUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const file = req === null || req === void 0 ? void 0 : req.file;
+    // @ts-expect-error user
+    const token = req === null || req === void 0 ? void 0 : req.user;
+    const result = yield register_services_1.UserServices.setImageIntoUser(file, token);
+    (0, send_success_1.default)(res, {
+        statuscode: http_status_1.default.CREATED,
+        success: true,
+        message: 'Image change  successfully',
+        data: result,
+    });
+}));
+const getAllUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield register_services_1.UserServices.getAllUserFromDB(req.query);
+    (0, send_success_1.default)(res, {
+        statuscode: http_status_1.default.CREATED,
+        success: true,
+        message: 'All user retrieved   successfully',
+        meta: result.meta,
+        data: result.data,
+    });
+}));
+const getMe = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // @ts-expect-error user
+    const token = req === null || req === void 0 ? void 0 : req.user;
+    const result = yield register_services_1.UserServices.getMeFromDB(token);
+    (0, send_success_1.default)(res, {
+        statuscode: http_status_1.default.CREATED,
+        success: true,
+        message: 'My date retrieved   successfully',
+        data: result,
+    });
+}));
 exports.UserController = {
     CreateUser,
     loginUser,
@@ -101,4 +144,8 @@ exports.UserController = {
     forgetPassword,
     resetPassword,
     changePassword,
+    setImageIntoUser,
+    getMe,
+    updateUser,
+    getAllUser,
 };

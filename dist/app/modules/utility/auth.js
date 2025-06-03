@@ -20,9 +20,11 @@ const http_status_1 = __importDefault(require("http-status"));
 const register_model_1 = require("../Auth/simpleAuth/register.model");
 const auth = (...requiredRole) => {
     return (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-        const token = req.cookies.accessToken;
-        console.log(token);
+        const token = req.headers.authorization;
         let decoded;
+        if (!token || typeof token !== 'string') {
+            throw new appError_1.default(http_status_1.default.UNAUTHORIZED, 'No token provided');
+        }
         try {
             decoded = jsonwebtoken_1.default.verify(token, config_1.default.ACCESS_SECRET);
             // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
@@ -33,7 +35,7 @@ const auth = (...requiredRole) => {
         if (!decoded) {
             throw new appError_1.default(http_status_1.default.UNAUTHORIZED, 'User is not authorized');
         }
-        const user = yield register_model_1.User.findOne({ _id: decoded.id });
+        const user = yield register_model_1.User.findOne({ _id: decoded.Id });
         if (!user) {
             throw new appError_1.default(http_status_1.default.NOT_FOUND, 'Your User Id is Invalid!');
         }

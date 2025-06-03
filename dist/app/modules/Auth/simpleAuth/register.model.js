@@ -22,6 +22,12 @@ const addressSchema = new mongoose_1.Schema({
     post: { type: String, required: true },
     postCode: { type: String, required: true },
 }, { _id: false });
+const socialMediaLinksSchema = new mongoose_1.Schema({
+    facebook: { type: String },
+    linkedin: { type: String },
+    twitter: { type: String },
+    instagram: { type: String },
+}, { _id: false });
 const UserSchema = new mongoose_1.Schema({
     fullName: {
         type: String,
@@ -47,7 +53,7 @@ const UserSchema = new mongoose_1.Schema({
     },
     role: {
         type: String,
-        enum: ['admin', 'restaurant', 'user'],
+        enum: ['admin', 'user'],
         default: 'user',
         required: true,
     },
@@ -65,9 +71,8 @@ const UserSchema = new mongoose_1.Schema({
         type: addressSchema,
         required: true,
     },
-    isShop: {
-        type: Boolean,
-        default: false,
+    socialMesaLink: {
+        type: socialMediaLinksSchema,
     },
     secondaryPhone: {
         type: Number,
@@ -76,6 +81,7 @@ const UserSchema = new mongoose_1.Schema({
     },
     profileImage: {
         type: String,
+        default: 'https://img.freepik.com/premium-vector/user-circle-with-blue-gradient-circle_78370-4727.jpg?ga=GA1.1.323587279.1748262069&semt=ais_items_boosted&w=740',
     },
     isBlock: {
         type: Boolean,

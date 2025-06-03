@@ -20,6 +20,18 @@ const createRecommendation = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const findAllRecommendation = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await recommendationServices.allRecommendedIntoDb(req.query);
+    sendSuccess(res, {
+      statuscode: httpStatus.OK,
+      success: true,
+      message: 'All Recommendation retrieved successfully',
+      meta: result.meta,
+      data: result.data,
+    });
+  },
+);
 const findSpecifyRecommendation = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -61,6 +73,23 @@ const myRecommendation = catchAsync(async (req: Request, res: Response) => {
     data: result.data,
   });
 });
+const recommendationRelatedProduct = catchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const result =
+      await recommendationServices.recommendationRelatedProductIntoDb(
+        id,
+        req.query,
+      );
+    sendSuccess(res, {
+      statuscode: httpStatus.OK,
+      success: true,
+      message: 'My recommendation retrieved successfully',
+      meta: result.meta,
+      data: result.data,
+    });
+  },
+);
 const recommendationForMe = catchAsync(async (req: Request, res: Response) => {
   // @ts-expect-error user
   const user = req?.user;
@@ -119,4 +148,6 @@ export const recommendationController = {
   deleteRecommendation,
   findSingleRecommendation,
   updateMyRecommendation,
+  findAllRecommendation,
+  recommendationRelatedProduct,
 };

@@ -18,7 +18,7 @@ const CreateUser = catchAsync(async (req: Request, res: Response) => {
 const updateUser = catchAsync(async (req: Request, res: Response) => {
   const data = req.body;
   // @ts-expect-error user
-  const user = req.user;
+  const user = req?.user;
   const result = await UserServices.updateUserIntoDB(data, user);
   sendSuccess(res, {
     statuscode: httpStatus.CREATED,
@@ -65,8 +65,8 @@ const refreshTokenUseCreateSecretToken = catchAsync(
   },
 );
 const forgetPassword = catchAsync(async (req: Request, res: Response) => {
-  const { email } = req.body;
-  const result = await UserServices.forgetPassword(email);
+  const user = req.body;
+  const result = await UserServices.forgetPassword(user);
   sendSuccess(res, {
     statuscode: httpStatus.CREATED,
     success: true,
@@ -75,9 +75,8 @@ const forgetPassword = catchAsync(async (req: Request, res: Response) => {
   });
 });
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
-  const body = req.headers.authorization;
   const data = req.body;
-  const result = await UserServices.resetPassword(body, data);
+  const result = await UserServices.resetPassword(data);
   sendSuccess(res, {
     statuscode: httpStatus.CREATED,
     success: true,
@@ -109,6 +108,16 @@ const setImageIntoUser = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getAllUser = catchAsync(async (req: Request, res: Response) => {
+  const result = await UserServices.getAllUserFromDB(req.query);
+  sendSuccess(res, {
+    statuscode: httpStatus.CREATED,
+    success: true,
+    message: 'All user retrieved   successfully',
+    meta: result.meta,
+    data: result.data,
+  });
+});
 const getMe = catchAsync(async (req: Request, res: Response) => {
   // @ts-expect-error user
   const token = req?.user;
@@ -130,4 +139,5 @@ export const UserController = {
   setImageIntoUser,
   getMe,
   updateUser,
+  getAllUser,
 };

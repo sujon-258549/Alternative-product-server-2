@@ -2,11 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const register_router_1 = require("../modules/Auth/simpleAuth/register.router");
-const restaurant_router_1 = require("../modules/Restaurant/restaurant.router");
-const order_router_1 = require("../modules/Order/order.router");
-const meal_provider_router_1 = require("../modules/mealProvider/meal.provider.router");
-const sosolauth_router_1 = require("../modules/Auth/sosalAuth/sosolauth.router");
-const sslCommeriz_router_1 = require("../modules/sslCommeriz/sslCommeriz.router");
+const product_router_1 = require("../modules/product/product.router");
+const recommendation_router_1 = require("../modules/recommendation/recommendation.router");
+const contactUs_router_1 = require("../modules/contactUs/contactUs.router");
 const router = (0, express_1.Router)();
 const allRouter = [
     {
@@ -14,24 +12,16 @@ const allRouter = [
         router: register_router_1.userRouter,
     },
     {
-        path: '/restaurant',
-        router: restaurant_router_1.restaurantRouter,
+        path: '/product',
+        router: product_router_1.product,
     },
     {
-        path: '/order',
-        router: order_router_1.orderRouter,
+        path: '/recommendation',
+        router: recommendation_router_1.recommendation,
     },
     {
-        path: '/meal-provider',
-        router: meal_provider_router_1.mealProviderRouter,
-    },
-    {
-        path: '/sosal',
-        router: sosolauth_router_1.sosalLoginUserRouter,
-    },
-    {
-        path: '/ssl',
-        router: sslCommeriz_router_1.SSLRoutes,
+        path: '/contact',
+        router: contactUs_router_1.contactRouter,
     },
 ];
 allRouter.forEach((route) => router.use(route.path, route.router));

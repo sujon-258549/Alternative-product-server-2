@@ -15,7 +15,7 @@ const productSchema = new Schema<TProduct>(
     isInStock: { type: Boolean, required: true },
     categories: { type: String, required: true },
     weight: { type: Number, required: true },
-    isDigital: { type: String, required: true },
+    isDigital: { type: Boolean, required: true },
   },
   {
     timestamps: true,

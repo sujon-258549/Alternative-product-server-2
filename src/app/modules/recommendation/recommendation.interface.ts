@@ -17,9 +17,6 @@ export interface TRecommendation {
   description: string;
   shortDescription?: string;
 
-  // Inventory
-  isInStock?: boolean;
-
   // Categorization
   categories: string;
 

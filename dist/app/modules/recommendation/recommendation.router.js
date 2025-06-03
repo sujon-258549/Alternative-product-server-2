@@ -1,0 +1,21 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.recommendation = void 0;
+const express_1 = require("express");
+const auth_1 = __importDefault(require("../utility/auth"));
+const register_const_1 = require("../Auth/simpleAuth/register.const");
+const recommendation_controller_1 = require("./recommendation.controller");
+const router = (0, express_1.Router)();
+router.post('/create-recommended/:id', (0, auth_1.default)(register_const_1.UserRole.user), recommendation_controller_1.recommendationController.createRecommendation);
+router.get('/product-recommendation/:id', (0, auth_1.default)(register_const_1.UserRole.user), recommendation_controller_1.recommendationController.findSpecifyRecommendation);
+router.get('/', recommendation_controller_1.recommendationController.findAllRecommendation);
+router.get('/my-recommendation', (0, auth_1.default)(register_const_1.UserRole.user), recommendation_controller_1.recommendationController.myRecommendation);
+router.get('/recommendation-for-me', (0, auth_1.default)(register_const_1.UserRole.user), recommendation_controller_1.recommendationController.recommendationForMe);
+router.get('/recommendation-related-product/:id', (0, auth_1.default)(register_const_1.UserRole.user), recommendation_controller_1.recommendationController.recommendationRelatedProduct);
+router.get('/:id', (0, auth_1.default)(register_const_1.UserRole.user), recommendation_controller_1.recommendationController.findSingleRecommendation);
+router.delete('/my-recommendation/:id', (0, auth_1.default)('user'), recommendation_controller_1.recommendationController.deleteRecommendation);
+router.patch('/update-my-recommendation/:id', (0, auth_1.default)(register_const_1.UserRole.user), recommendation_controller_1.recommendationController.updateMyRecommendation);
+exports.recommendation = router;

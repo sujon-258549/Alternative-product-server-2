@@ -10,13 +10,14 @@ const contactSchema = new Schema<IContact>(
       ref: 'User', // Assuming this references a User model
     },
     sendId: {
-      type: String,
+      type: Schema.Types.ObjectId,
       required: [true, 'Author selection is required'],
+      ref: 'User', // Assuming this references a User model
     },
     message: {
       type: String,
       required: [true, 'Message is required'],
-      minlength: [10, 'Message must be at least 10 characters'],
+      minlength: [1, 'Message must be at least 10 characters'],
     },
   },
   {

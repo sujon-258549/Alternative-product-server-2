@@ -9,17 +9,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-class queryBuilder {
+class QueryBuilder {
     constructor(modelQuery, query) {
         this.modelQuery = modelQuery;
         this.query = query;
     }
-    search(searchableFields) {
+    search(searchableField) {
         var _a;
         const searchTerm = (_a = this === null || this === void 0 ? void 0 : this.query) === null || _a === void 0 ? void 0 : _a.searchTerm;
         if (searchTerm) {
             this.modelQuery = this.modelQuery.find({
-                $or: searchableFields.map((field) => ({
+                $or: searchableField.map((field) => ({
                     [field]: { $regex: searchTerm, $options: 'i' },
                 })),
             });
@@ -27,38 +27,66 @@ class queryBuilder {
         return this;
     }
     filter() {
-        const queryObj = Object.assign({}, this.query);
-        const excludeFields = ['searchTram', 'sort', 'limit', 'page', 'fields'];
-        excludeFields.forEach((item) => delete queryObj[item]);
-        this.modelQuery = this.modelQuery.find(queryObj);
+        const queryObject = Object.assign({}, this.query);
+        const excludeField = ['searchTerm', 'sort', 'limit', 'page', 'field'];
+        //   delete serch tarm
+        excludeField.forEach((el) => delete queryObject[el]);
+        this.modelQuery = this.modelQuery.find(queryObject);
         return this;
     }
     sort() {
         var _a, _b;
-        const sort = ((_a = this === null || this === void 0 ? void 0 : this.query) === null || _a === void 0 ? void 0 : _a.sort) || '-createdAt';
-        this.modelQuery = (_b = this.modelQuery) === null || _b === void 0 ? void 0 : _b.sort(sort);
+        const sort = ((_b = (_a = this.query.sort) === null || _a === void 0 ? void 0 : _a.split(',')) === null || _b === void 0 ? void 0 : _b.join(' ')) || '-createdAt'; // Potential issue  //
+        this.modelQuery = this.modelQuery.sort(sort);
         return this;
     }
     paginate() {
-        const page = Number(this.query.page) || 1;
-        const limit = Number(this.query.limit) || 10;
+        var _a, _b;
+        const page = Number((_a = this === null || this === void 0 ? void 0 : this.query) === null || _a === void 0 ? void 0 : _a.page) || 1;
+        const limit = Number((_b = this === null || this === void 0 ? void 0 : this.query) === null || _b === void 0 ? void 0 : _b.limit) || 10;
         const skip = (page - 1) * limit;
         this.modelQuery = this.modelQuery.skip(skip).limit(limit);
         return this;
     }
-    fields() {
-        var _a, _b, _c;
-        const fields = ((_c = (_b = (_a = this === null || this === void 0 ? void 0 : this.query) === null || _a === void 0 ? void 0 : _a.fields) === null || _b === void 0 ? void 0 : _b.split(',')) === null || _c === void 0 ? void 0 : _c.join(' ')) || '-__v';
-        this.modelQuery = this.modelQuery.select(fields);
+    priceRange(minPrice, maxPrice) {
+        console.log(minPrice, maxPrice);
+        const priceFilter = {};
+        if (minPrice != null)
+            priceFilter.$gte = minPrice;
+        if (maxPrice != null)
+            priceFilter.$lte = maxPrice;
+        if (Object.keys(priceFilter).length) {
+            this.modelQuery = this.modelQuery.find({
+                price: priceFilter,
+            });
+        }
         return this;
     }
+    fields() {
+        var _a, _b;
+        const field = ((_b = (_a = this.query.field) === null || _a === void 0 ? void 0 : _a.split(',')) === null || _b === void 0 ? void 0 : _b.join(' ')) || '-__v';
+        this.modelQuery = this.modelQuery.select(field);
+        return this;
+    }
+    // async countTotal() {
+    //   const totalQueries = this.modelQuery.getFilter();
+    //   const limit = Number(this?.query?.limit) || 10;
+    //   const total = await this.modelQuery.model.countDocuments(totalQueries);
+    //   const page = Number(this?.query?.page) || 1;
+    //   const totalPage = Math.ceil(total / limit);
+    //   return {
+    //     page,
+    //     limit,
+    //     total,
+    //     totalPage,
+    //   };
+    // }
     countTotal() {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b;
             const totalQueries = this.modelQuery.getFilter();
             const total = yield this.modelQuery.model.countDocuments(totalQueries);
-            const page = Number((_a = this === null || this === void 0 ? void 0 : this.query) === null || _a === void 0 ? void 0 : _a.page) || 1;
-            const limit = Number((_b = this === null || this === void 0 ? void 0 : this.query) === null || _b === void 0 ? void 0 : _b.limit) || 10;
+            const page = Number(this.query.page) || 1;
+            const limit = Number(this.query.limit) || 10;
             const totalPage = Math.ceil(total / limit);
             return {
                 page,
@@ -69,4 +97,4 @@ class queryBuilder {
         });
     }
 }
-exports.default = queryBuilder;
+exports.default = QueryBuilder;
