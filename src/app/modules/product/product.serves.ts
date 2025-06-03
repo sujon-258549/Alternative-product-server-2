@@ -16,11 +16,11 @@ const CreateProductIntoDB = async (payload: TProduct, user: JwtPayload) => {
   return result;
 };
 const FindAllProductIntoDb = async (query: Record<string, unknown>) => {
-  const { minPrice, maxPrice } = query as {
-    minPrice?: string | number;
-    maxPrice?: string | number;
-  };
-  console.log('Min and Max Prices', minPrice, maxPrice, query);
+  // const { minPrice, maxPrice } = query as {
+  //   minPrice?: string | number;
+  //   maxPrice?: string | number;
+  // };
+  // console.log('Min and Max Prices', minPrice, maxPrice, query);
   const result = new queryBuilder(Product.find().populate('authorId'), query)
     .search([
       'productName',
@@ -33,11 +33,11 @@ const FindAllProductIntoDb = async (query: Record<string, unknown>) => {
     .sort()
     .fields()
     .filter()
-    .paginate()
-    .priceRange(
-      minPrice != null ? Number(minPrice) : undefined,
-      maxPrice != null ? Number(maxPrice) : undefined,
-    );
+    .paginate();
+  // .priceRange(
+  //   minPrice != null ? Number(minPrice) : undefined,
+  //   maxPrice != null ? Number(maxPrice) : undefined,
+  // );
 
   const meta = await result.countTotal();
   const data = await result.modelQuery;

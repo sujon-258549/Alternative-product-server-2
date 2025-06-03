@@ -28,8 +28,11 @@ const CreateProductIntoDB = (payload, user) => __awaiter(void 0, void 0, void 0,
     return result;
 });
 const FindAllProductIntoDb = (query) => __awaiter(void 0, void 0, void 0, function* () {
-    const { minPrice, maxPrice } = query;
-    console.log('Min and Max Prices', minPrice, maxPrice, query);
+    // const { minPrice, maxPrice } = query as {
+    //   minPrice?: string | number;
+    //   maxPrice?: string | number;
+    // };
+    // console.log('Min and Max Prices', minPrice, maxPrice, query);
     const result = new queryBuilder_1.default(productr_mode_1.default.find().populate('authorId'), query)
         .search([
         'productName',
@@ -42,8 +45,11 @@ const FindAllProductIntoDb = (query) => __awaiter(void 0, void 0, void 0, functi
         .sort()
         .fields()
         .filter()
-        .paginate()
-        .priceRange(minPrice != null ? Number(minPrice) : undefined, maxPrice != null ? Number(maxPrice) : undefined);
+        .paginate();
+    // .priceRange(
+    //   minPrice != null ? Number(minPrice) : undefined,
+    //   maxPrice != null ? Number(maxPrice) : undefined,
+    // );
     const meta = yield result.countTotal();
     const data = yield result.modelQuery;
     return { meta, data };

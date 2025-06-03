@@ -48,20 +48,18 @@ class QueryBuilder {
         this.modelQuery = this.modelQuery.skip(skip).limit(limit);
         return this;
     }
-    priceRange(minPrice, maxPrice) {
-        console.log(minPrice, maxPrice);
-        const priceFilter = {};
-        if (minPrice != null)
-            priceFilter.$gte = minPrice;
-        if (maxPrice != null)
-            priceFilter.$lte = maxPrice;
-        if (Object.keys(priceFilter).length) {
-            this.modelQuery = this.modelQuery.find({
-                price: priceFilter,
-            });
-        }
-        return this;
-    }
+    // priceRange(minPrice?: number, maxPrice?: number) {
+    //   console.log(minPrice, maxPrice);
+    //   const priceFilter: Record<string, unknown> = {};
+    //   if (minPrice != null) priceFilter.$gte = minPrice;
+    //   if (maxPrice != null) priceFilter.$lte = maxPrice;
+    //   if (Object.keys(priceFilter).length) {
+    //     this.modelQuery = this.modelQuery.find({
+    //       price: priceFilter,
+    //     } as FilterQuery<T>);
+    //   }
+    //   return this;
+    // }
     fields() {
         var _a, _b;
         const field = ((_b = (_a = this.query.field) === null || _a === void 0 ? void 0 : _a.split(',')) === null || _b === void 0 ? void 0 : _b.join(' ')) || '-__v';
