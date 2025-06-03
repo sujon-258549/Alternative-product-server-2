@@ -7,7 +7,15 @@ import cookieParser from 'cookie-parser';
 import { globalErrorHandler } from './app/middleware/globalErrorHandler';
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(
+  cors({
+    origin: [
+      'http://localhost:5173',
+      'https://altranative-product-client.vercel.app',
+    ],
+    credentials: true,
+  }),
+);
 
 // router
 
